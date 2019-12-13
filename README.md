@@ -28,7 +28,7 @@ this will simply write the final output of the program to stdout.
 - after each arithmetic instruction, the number to be used for the next arithmetic instruction will reset to 0.
 
 ### thanks
-the naz interpreter and runner are heavily based on those of the fantastic [\\/\\/>](https://github.com/torcado194/worm), by @torcado194. <3
+the naz interpreter and runner are heavily based on those of the fantastic [\\/\\/>](https://github.com/torcado194/worm), by [torcado](https://github.com/torcado194). <3
 
 ### donate
 you can support the development of this project and others via Patreon:
