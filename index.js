@@ -6,7 +6,7 @@
 */
 
 var register = 0; // value in the register
-var num = 0; // value of the most recent number literal
+var num = 0; // value to be used for next arithmetic instruction
 var ptr = 0; // file pointer
 var output = ""; // output
 
@@ -40,6 +40,7 @@ function parse(code) {
     "m": () => {
       register *= num;
       chkRegister();
+      num = 0;
     },
     "s": () => {
       register -= num;
