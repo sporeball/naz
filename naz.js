@@ -20,7 +20,7 @@ function naz() {
   code = fs.readFileSync(path.join(__dirname, file), {encoding: "utf-8"}, function(){});
   code = code.split(/\r?\n/).map(l => l.split(""));
   
-  Naz.parse(code);
+  console.log(Naz.parse(code));
 }
 
 naz();
