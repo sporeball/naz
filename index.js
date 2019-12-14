@@ -97,6 +97,13 @@ function parse(code, file) {
     for (var j = 0; j < code[i].length; j++) {
       col = j + 1;
       var instruction = code[i][j];
+      
+      if (!(instruction in instructions)) {
+        err("invalid instruction");
+        trace();
+        return;
+      }
+      
       instructions[instruction]();
       if (halt) return;
     }
