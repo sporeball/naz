@@ -18,6 +18,7 @@ var col = 1;
 
 var output = ""; // output
 
+var comment = false; // comment flag
 var halt = false; // halt flag
 
 function parse(code, file) {
@@ -82,6 +83,11 @@ function parse(code, file) {
         err("invalid output value");
         trace();
       }
+    },
+    
+    // other instructions
+    ":": () => {
+      comment = true;
     }
   }
   
@@ -94,9 +100,12 @@ function parse(code, file) {
   
   for (var i = 0; i < code.length; i++) {
     line = i + 1;
+    comment = false; // reset comment flag
     for (var j = 0; j < code[i].length; j++) {
       col = j + 1;
       var instruction = code[i][j];
+      
+      if (comment) break;
       
       if (!(instruction in instructions)) {
         err("invalid instruction");
