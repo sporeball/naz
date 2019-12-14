@@ -12,15 +12,23 @@ const path = require("path")
 function naz() {
   var args = process.argv.slice(2);
   var file = args[0];
+  var filename;
+  
   if (file.slice(-4) != ".naz") {
     Naz.err("not a .naz file");
     return;
   }
   
+  if (file.indexOf("/") > -1) {
+    filename = file.slice(file.lastIndexOf("/") + 1, file.length);
+  } else {
+    filename = file;
+  }
+  
   code = fs.readFileSync(path.join(__dirname, file), {encoding: "utf-8"}, function(){});
   code = code.split(/\r?\n/).map(l => l.split(""));
   
-  Naz.parse(code);
+  Naz.parse(code, filename);
 }
 
 naz();

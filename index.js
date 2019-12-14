@@ -7,14 +7,22 @@
 
 const chalk = require("chalk")
 
+var filename;
+
 var register = 0; // value in the register
 var num = 0; // value to be used for next arithmetic instruction
+
 var ptr = 0; // file pointer
+var line = 1;
+var col = 1;
+
 var output = ""; // output
 
 var halt = false; // halt flag
 
-function parse(code) {
+function parse(code, file) {
+  filename = file;
+  
   var instructions = {
     // number literals
     "0": () => { num = 0; },
@@ -37,6 +45,7 @@ function parse(code) {
     "d": () => {
       if (num == 0) {
         err("division by zero");
+        trace();
       }
       register = Math.floor(register / num);
       num = 0;
@@ -59,6 +68,7 @@ function parse(code) {
     // program flow instructions
     "h": () => {
       warn("program halted.");
+      trace();
       halt = true;
     },
     "o": () => {
@@ -70,6 +80,7 @@ function parse(code) {
         output += String.fromCharCode(register);
       } else {
         err("invalid output value");
+        trace();
       }
     }
   }
@@ -77,33 +88,36 @@ function parse(code) {
   function chkRegister() {
     if (register < -127 || register > 127) {
       err("register value out of bounds");
+      trace();
     }
   }
   
   for (var i = 0; i < code.length; i++) {
+    line = i + 1;
     for (var j = 0; j < code[i].length; j++) {
+      col = j + 1;
       var instruction = code[i][j];
       instructions[instruction]();
       if (halt) return;
     }
   }
   
-  log(output);
+  log(output + "\n");
+  success("program ran successfully.")
   return;
 }
 
-log = str => {
-  console.log(chalk.white(str));
-}
-
-warn = str => {
-  console.log(chalk.yellow(str));
-}
+log = str => { console.log(chalk.white(str)) }
+info = str => { log(chalk.cyan(str)) }
+success = str => { log(chalk.green(str)) }
+warn = str => { log(chalk.yellow(str)) }
 
 err = str => {
-  console.log(chalk.red("Error: ") + str);
+  log(chalk.red("error: ") + str);
   halt = true;
 }
+
+trace = () => { info(`  at ${filename}:${line}:${col}`) }
 
 exports.parse = parse;
 exports.log = log;
