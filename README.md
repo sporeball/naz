@@ -2,13 +2,17 @@
 **naz** is a concise esoteric programming language with simple commands and a single register.
 
 ### usage
-first, clone this repository. you can then run any naz program like so:
+first, clone this repository, and install its dependencies:
+
+```
+$ npm install
+```
+
+you can then run any naz program like so:
 
 ```
 $ node naz.js filename.naz
 ```
-
-this will simply write the final output of the program to stdout.
 
 ### command reference
 - `0-9` - sets the number to be used for the next arithmetic instruction.
