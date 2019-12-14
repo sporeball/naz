@@ -13,14 +13,14 @@ function naz() {
   var args = process.argv.slice(2);
   var file = args[0];
   if (file.slice(-4) != ".naz") {
-    console.log("error: not a .naz file");
+    Naz.err("not a .naz file");
     return;
   }
   
   code = fs.readFileSync(path.join(__dirname, file), {encoding: "utf-8"}, function(){});
   code = code.split(/\r?\n/).map(l => l.split(""));
   
-  console.log(Naz.parse(code));
+  Naz.parse(code);
 }
 
 naz();

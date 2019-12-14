@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/sporeball/naz/issues"
   },
-  "homepage": "https://github.com/sporeball/naz#readme"
+  "homepage": "https://github.com/sporeball/naz#readme",
+  "dependencies": {
+    "chalk": "^3.0.0"
+  }
 }

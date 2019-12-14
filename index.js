@@ -5,10 +5,14 @@
   MIT license
 */
 
+const chalk = require("chalk")
+
 var register = 0; // value in the register
 var num = 0; // value to be used for next arithmetic instruction
 var ptr = 0; // file pointer
 var output = ""; // output
+
+var halt = false; // halt flag
 
 function parse(code) {
   var instructions = {
@@ -32,7 +36,7 @@ function parse(code) {
     },
     "d": () => {
       if (num == 0) {
-        throw new Error("error: division by zero");
+        err("division by zero");
       }
       register = Math.floor(register / num);
       num = 0;
@@ -54,7 +58,8 @@ function parse(code) {
     
     // program flow instructions
     "h": () => {
-      throw new Error("program execution halted.");
+      warn("program halted.");
+      halt = true;
     },
     "o": () => {
       if (register > -1 && register < 10) {
@@ -64,14 +69,14 @@ function parse(code) {
       } else if (register > 31 && register < 127) {
         output += String.fromCharCode(register);
       } else {
-        throw new Error("error: invalid output value");
+        err("invalid output value");
       }
     }
   }
   
   function chkRegister() {
     if (register < -127 || register > 127) {
-      throw new Error("error: register overflow/underflow");
+      err("register value out of bounds");
     }
   }
   
@@ -79,10 +84,28 @@ function parse(code) {
     for (var j = 0; j < code[i].length; j++) {
       var instruction = code[i][j];
       instructions[instruction]();
+      if (halt) return;
     }
   }
   
-  return output;
+  log(output);
+  return;
+}
+
+log = str => {
+  console.log(chalk.white(str));
+}
+
+warn = str => {
+  console.log(chalk.yellow(str));
+}
+
+err = str => {
+  console.log(chalk.red("Error: ") + str);
+  halt = true;
 }
 
 exports.parse = parse;
+exports.log = log;
+exports.warn = warn;
+exports.err = err;
