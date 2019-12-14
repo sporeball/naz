@@ -88,11 +88,6 @@ function parse(code, file) {
     // other instructions
     ":": () => {
       comment = true;
-    },
-    "\n": () => {
-      line++;
-      col = 1;
-      comment = false;
     }
   }
   
@@ -106,7 +101,16 @@ function parse(code, file) {
   for (var i = 0; i < code.length; i++) {
     var instruction = code[i];
     
-    if (comment) break;
+    // check for newline here so that execution can continue properly
+    if (instruction == "\n") {
+      line++;
+      col = 1;
+      comment = false;
+      continue;
+    }
+    
+    
+    if (comment) continue;
     
     if (!(instruction in instructions)) {
       err("invalid instruction");
