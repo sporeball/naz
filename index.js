@@ -88,6 +88,11 @@ function parse(code, file) {
     // other instructions
     ":": () => {
       comment = true;
+    },
+    "\n": () => {
+      line++;
+      col = 1;
+      comment = false;
     }
   }
   
@@ -99,23 +104,20 @@ function parse(code, file) {
   }
   
   for (var i = 0; i < code.length; i++) {
-    line = i + 1;
-    comment = false; // reset comment flag
-    for (var j = 0; j < code[i].length; j++) {
-      col = j + 1;
-      var instruction = code[i][j];
-      
-      if (comment) break;
-      
-      if (!(instruction in instructions)) {
-        err("invalid instruction");
-        trace();
-        return;
-      }
-      
-      instructions[instruction]();
-      if (halt) return;
+    var instruction = code[i];
+    
+    if (comment) break;
+    
+    if (!(instruction in instructions)) {
+      err("invalid instruction");
+      trace();
+      return;
     }
+    
+    instructions[instruction]();
+    if (halt) return;
+    
+    col++;
   }
   
   log(output + "\n");

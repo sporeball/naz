@@ -26,7 +26,7 @@ function naz() {
   }
   
   code = fs.readFileSync(path.join(__dirname, file), {encoding: "utf-8"}, function(){});
-  code = code.split(/\r?\n/).map(l => l.split(""));
+  code = code.split("").filter(val => val != "\r");
   
   Naz.parse(code, filename);
 }
