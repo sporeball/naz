@@ -9,19 +9,14 @@ const chalk = require("chalk")
 
 var filename;
 
-var register = 0; // value in the register
-var num = 0; // value to be used for next arithmetic instruction
-
-var ptr = 0; // file pointer
-var line = 1;
-var col = 1;
+var register = num = ptr = 0;
+var line = col = 1;
 
 var output = ""; // output
 
 var halt = false; // halt flag
 
 function parse(code, file) {
-  // console.log(code);
   filename = file;
   
   var instructions = {
@@ -29,29 +24,23 @@ function parse(code, file) {
     "a": () => {
       register += num;
       chkRegister();
-      num = 0;
     },
     "d": () => {
       if (num == 0) {
-        err("division by zero");
-        trace();
+        errTrace("division by zero");
       }
       register = Math.floor(register / num);
-      num = 0;
     },
     "m": () => {
       register *= num;
       chkRegister();
-      num = 0;
     },
     "s": () => {
       register -= num;
       chkRegister();
-      num = 0;
     },
     "p": () => {
       register = register % num;
-      num = 0;
     },
     
     // program flow instructions
@@ -69,8 +58,7 @@ function parse(code, file) {
       } else if (register > 31 && register < 127) {
         val = String.fromCharCode(register);
       } else {
-        err("invalid output value");
-        trace();
+        errTrace("invalid output value");
       }
       
       for (let i = 0; i < num; i++) {
@@ -81,8 +69,7 @@ function parse(code, file) {
   
   function chkRegister() {
     if (register < -127 || register > 127) {
-      err("register value out of bounds");
-      trace();
+      errTrace("register value out of bounds");
     }
   }
   
@@ -95,25 +82,17 @@ function parse(code, file) {
     
     if (isNaN(code[i].slice(0, 1))) {
       if (!(code[i].slice(0, 1) in instructions)) {
-        err("invalid instruction");
-        trace();
-        return;
+        errTrace("invalid instruction");
       }
-      err("missing number literal");
-      trace();
-      return;
+      errTrace("missing number literal");
     } else {
       if (code[i].slice(1, 2) == "\r") {
-        err("number literal missing an instruction");
-        trace();
-        return;
+        errTrace("number literal missing an instruction");
       }
     }
     
     if (!isNaN(code[i].slice(1, 2))) {
-      err("attempt to chain number literals");
-      trace();
-      return;
+      errTrace("attempt to chain number literals");
     }
     
     num = Number(code[i].slice(0, 1));
@@ -121,10 +100,10 @@ function parse(code, file) {
     
     var instruction = code[i].slice(1, 2);
     if (!(instruction in instructions)) {
-      err("invalid instruction");
-      trace();
-      return;
+      errTrace("invalid instruction");
     }
+    
+    if (halt) return;
     
     instructions[instruction]();
     if (halt) return;
@@ -147,7 +126,12 @@ err = str => {
   halt = true;
 }
 
-trace = () => { info(`  at ${filename}:${line}:${col}`) }
+errTrace = str => {
+  err(str);
+  trace();
+}
+
+trace = () => { info(`  at ${filename}:${line}:${col}`); }
 
 exports.parse = parse;
 exports.log = log;
