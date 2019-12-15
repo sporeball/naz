@@ -18,25 +18,13 @@ var col = 1;
 
 var output = ""; // output
 
-var comment = false; // comment flag
 var halt = false; // halt flag
 
 function parse(code, file) {
+  // console.log(code);
   filename = file;
   
   var instructions = {
-    // number literals
-    "0": () => { num = 0; },
-    "1": () => { num = 1; },
-    "2": () => { num = 2; },
-    "3": () => { num = 3; },
-    "4": () => { num = 4; },
-    "5": () => { num = 5; },
-    "6": () => { num = 6; },
-    "7": () => { num = 7; },
-    "8": () => { num = 8; },
-    "9": () => { num = 9; },
-    
     // arithmetic instructions
     "a": () => {
       register += num;
@@ -73,21 +61,21 @@ function parse(code, file) {
       halt = true;
     },
     "o": () => {
+      let val;
       if (register > -1 && register < 10) {
-        output += register.toString();
+        val = register.toString();
       } else if (register == 10) {
-        output += "\n";
+        val = "\n";
       } else if (register > 31 && register < 127) {
-        output += String.fromCharCode(register);
+        val = String.fromCharCode(register);
       } else {
         err("invalid output value");
         trace();
       }
-    },
-    
-    // other instructions
-    ":": () => {
-      comment = true;
+      
+      for (let i = 0; i < num; i++) {
+        output += val;
+      }
     }
   }
   
@@ -99,19 +87,39 @@ function parse(code, file) {
   }
   
   for (var i = 0; i < code.length; i++) {
-    var instruction = code[i];
-    
-    // check for newline here so that execution can continue properly
-    if (instruction == "\n") {
+    if (code[i] == "\r\n") {
       line++;
       col = 1;
-      comment = false;
       continue;
     }
     
+    if (isNaN(code[i].slice(0, 1))) {
+      if (!(code[i].slice(0, 1) in instructions)) {
+        err("invalid instruction");
+        trace();
+        return;
+      }
+      err("missing number literal");
+      trace();
+      return;
+    } else {
+      if (code[i].slice(1, 2) == "\r") {
+        err("number literal missing an instruction");
+        trace();
+        return;
+      }
+    }
     
-    if (comment) continue;
+    if (!isNaN(code[i].slice(1, 2))) {
+      err("attempt to chain number literals");
+      trace();
+      return;
+    }
     
+    num = Number(code[i].slice(0, 1));
+    col++;
+    
+    var instruction = code[i].slice(1, 2);
     if (!(instruction in instructions)) {
       err("invalid instruction");
       trace();

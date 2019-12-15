@@ -25,8 +25,11 @@ function naz() {
     filename = file;
   }
   
-  code = fs.readFileSync(path.join(__dirname, file), {encoding: "utf-8"}, function(){});
-  code = code.split("").filter(val => val != "\r");
+  var contents = fs.readFileSync(path.join(__dirname, file), {encoding: "utf-8"}, function(){});
+  var code = [];
+  for (var i = 0; i < contents.length; i += 2) {
+    code.push(contents.substr(i, 2));
+  }
   
   Naz.parse(code, filename);
 }

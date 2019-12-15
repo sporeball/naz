@@ -26,7 +26,6 @@ $ node naz.js filename.naz
   - 32-126 - outputs an ASCII value
 - `p` - divides the register by a value, then sets the register equal to the remainder.
 - `s` - subtracts a value from the register.
-- `:` - comment instruction. the interpreter will ignore all text until the beginning of the next line.
 
 #### notes
 - the value in the register must be between -127 and 127 inclusive. if an arithmetic instruction causes the register to go outside these values, program execution will **immediately halt**.
