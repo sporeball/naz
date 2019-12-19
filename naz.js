@@ -14,6 +14,8 @@ function naz() {
   var file = args[0];
   var filename;
   
+  var delay = 1;
+  
   if (file.slice(-4) != ".naz") {
     Naz.err("not a .naz file");
     return;
@@ -25,13 +27,18 @@ function naz() {
     filename = file;
   }
   
+  if (args.includes("-d") || args.includes("--delay")) {
+    let idx = args.findIndex(v => v === "-d" || v === "--delay");
+    delay = args[idx + 1];
+  }
+  
   var contents = fs.readFileSync(path.join(__dirname, file), {encoding: "utf-8"}, function(){});
   var code = [];
   for (var i = 0; i < contents.length; i += 2) {
     code.push(contents.substr(i, 2));
   }
   
-  Naz.parse(code, filename);
+  Naz.parse(code, filename, delay);
 }
 
 naz();

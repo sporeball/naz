@@ -14,6 +14,9 @@ you can then run any naz program like so:
 $ node naz.js filename.naz
 ```
 
+### flags
+- `-d` / `--delay` - sets the delay between execution steps (default: 1ms) (optional)
+
 ### command reference
 - `0-9` - sets the number to be used for the next arithmetic instruction.
 - `a` - adds a value to the register.

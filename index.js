@@ -5,8 +5,16 @@
   MIT license
 */
 
-const chalk = require("chalk")
+const chalk = require("chalk");
 const perf = require("execution-time")();
+
+const ora = require("ora");
+const spinner = ora("running...")
+spinner.color = "yellow";
+spinner.spinner = {
+  "interval": 80,
+  "frames": ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
+}
 
 var filename;
 
@@ -17,7 +25,7 @@ var output = ""; // output
 
 var halt = false; // halt flag
 
-function parse(code, file) {
+function parse(code, file, delay) {
   filename = file;
   
   var instructions = {
@@ -82,16 +90,19 @@ function parse(code, file) {
   
   var i = 0;
   async function main() {
+    spinner.start();
     perf.start();
     
     while (i < code.length) {
       step(i);
-      await sleep(20);
+      await sleep(delay);
       i++;
     }
     
     const results = perf.stop();
     const ms = results.time.toFixed(0);
+    
+    spinner.stop();
     
     log(chalk.green("finished") + chalk.cyan(` in ${ms}ms`))
     log(`output: ${output}`)
