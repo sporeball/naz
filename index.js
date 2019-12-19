@@ -6,6 +6,7 @@
 */
 
 const chalk = require("chalk")
+const perf = require("execution-time")();
 
 var filename;
 
@@ -73,32 +74,57 @@ function parse(code, file) {
     }
   }
   
-  for (var i = 0; i < code.length; i++) {
-    if (code[i] == "\r\n") {
-      line++;
-      col = 1;
-      continue;
+  function sleep(ms) {
+    return new Promise(resolve => {
+      setTimeout(resolve, ms);
+    });
+  }
+  
+  var i = 0;
+  async function main() {
+    perf.start();
+    
+    while (i < code.length) {
+      step(i);
+      await sleep(20);
+      i++;
     }
     
-    if (isNaN(code[i].slice(0, 1))) {
-      if (!(code[i].slice(0, 1) in instructions)) {
+    const results = perf.stop();
+    const ms = results.time.toFixed(0);
+    
+    log(chalk.green("finished") + chalk.cyan(` in ${ms}ms`))
+    log(`output: ${output}`)
+    return;
+  }
+  main();
+  
+  function step(n) {
+    if (code[n] == "\r\n") {
+      line++;
+      col = 1;
+      return;
+    }
+    
+    if (isNaN(code[n].slice(0, 1))) {
+      if (!(code[n].slice(0, 1) in instructions)) {
         errTrace("invalid instruction");
       }
       errTrace("missing number literal");
     } else {
-      if (code[i].slice(1, 2) == "\r") {
+      if (code[n].slice(1, 2) == "\r") {
         errTrace("number literal missing an instruction");
       }
     }
     
-    if (!isNaN(code[i].slice(1, 2))) {
+    if (!isNaN(code[n].slice(1, 2))) {
       errTrace("attempt to chain number literals");
     }
     
-    num = Number(code[i].slice(0, 1));
+    num = Number(code[n].slice(0, 1));
     col++;
     
-    var instruction = code[i].slice(1, 2);
+    var instruction = code[n].slice(1, 2);
     if (!(instruction in instructions)) {
       errTrace("invalid instruction");
     }
@@ -110,10 +136,6 @@ function parse(code, file) {
     
     col++;
   }
-  
-  log(output + "\n");
-  success("program ran successfully.")
-  return;
 }
 
 log = str => { console.log(chalk.white(str)) }
