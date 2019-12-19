@@ -95,6 +95,7 @@ function parse(code, file, delay) {
     
     while (i < code.length) {
       step(i);
+      if (halt) break;
       await sleep(delay);
       i++;
     }
@@ -140,10 +141,7 @@ function parse(code, file, delay) {
       errTrace("invalid instruction");
     }
     
-    if (halt) return;
-    
     instructions[instruction]();
-    if (halt) return;
     
     col++;
   }
@@ -155,6 +153,8 @@ success = str => { log(chalk.green(str)) }
 warn = str => { log(chalk.yellow(str)) }
 
 err = str => {
+  spinner.stop();
+  perf.stop();
   log(chalk.red("error: ") + str);
   halt = true;
 }
@@ -162,6 +162,7 @@ err = str => {
 errTrace = str => {
   err(str);
   trace();
+  process.exit(1);
 }
 
 trace = () => { info(`  at ${filename}:${line}:${col}`); }

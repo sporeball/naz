@@ -6,6 +6,8 @@
 */
 
 const Naz = require("./index.js")
+
+const chalk = require("chalk");
 const fs = require("fs")
 const path = require("path")
 
@@ -17,8 +19,7 @@ function naz() {
   var delay = 1;
   
   if (file.slice(-4) != ".naz") {
-    Naz.err("not a .naz file");
-    return;
+    runnerErr("not a .naz file");
   }
   
   if (file.indexOf("/") > -1) {
@@ -39,6 +40,11 @@ function naz() {
   }
   
   Naz.parse(code, filename, delay);
+}
+
+runnerErr = str => {
+  Naz.log(chalk.red("error: ") + "not a .naz file");
+  process.exit(1);
 }
 
 naz();
