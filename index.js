@@ -7,6 +7,7 @@
 
 const chalk = require("chalk");
 const perf = require("execution-time")();
+const ms = require("pretty-ms");
 
 const ora = require("ora");
 const spinner = ora("running...")
@@ -101,11 +102,11 @@ function parse(code, file, delay) {
     }
     
     const results = perf.stop();
-    const ms = results.time.toFixed(0);
+    const time = ms(Number(results.time.toFixed(0)));
     
     spinner.stop();
     
-    log(chalk.green("finished") + chalk.cyan(` in ${ms}ms`))
+    log(chalk.green("finished") + chalk.cyan(` in ${time}`))
     log(`output: ${output}`)
     return;
   }
