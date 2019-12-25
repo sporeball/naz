@@ -19,16 +19,17 @@ spinner.spinner = {
 
 var filename;
 
-var register = num = ptr = 0;
+var register = num = fnum = ptr = 0;
 var line = col = 1;
 
 var output = ""; // output
 
 var halt = false; // halt flag
+var func = false; // function flag
 
 function parse(code, file, delay) {
   filename = file;
-  
+
   var instructions = {
     // arithmetic instructions
     "a": () => {
@@ -52,8 +53,20 @@ function parse(code, file, delay) {
     "p": () => {
       register = register % num;
     },
-    
+
     // program flow instructions
+    "f": () => {
+      func = true;
+      fnum = num;
+      if (fs_declared[fnum]) {
+        for (var i = 0; i < functions[fnum].length; i += 2) {
+          let val = functions[fnum].substr(i, 2);
+          num = Number(val.slice(0, 1));
+          let instruction = val.slice(1, 2);
+          instructions[instruction]();
+        }
+      }
+    },
     "h": () => {
       warn("program halted.");
       trace();
@@ -70,55 +83,84 @@ function parse(code, file, delay) {
       } else {
         errTrace("invalid output value");
       }
-      
+
       for (let i = 0; i < num; i++) {
         output += val;
       }
     }
   }
-  
+
+  var functions = {
+    0: "",
+    1: "",
+    2: "",
+    3: "",
+    4: "",
+    5: "",
+    6: "",
+    7: "",
+    8: "",
+    9: ""
+  };
+
+  var fs_declared = {
+    0: false,
+    1: false,
+    2: false,
+    3: false,
+    4: false,
+    5: false,
+    6: false,
+    7: false,
+    8: false,
+    9: false
+  };
+
   function chkRegister() {
     if (register < -127 || register > 127) {
       errTrace("register value out of bounds");
     }
   }
-  
+
   function sleep(ms) {
     return new Promise(resolve => {
       setTimeout(resolve, ms);
     });
   }
-  
+
   var i = 0;
   async function main() {
     spinner.start();
     perf.start();
-    
+
     while (i < code.length) {
       step(i);
       if (halt) break;
       await sleep(delay);
       i++;
     }
-    
+
     const results = perf.stop();
     const time = ms(Number(results.time.toFixed(0)));
-    
+
     spinner.stop();
-    
+
     log(chalk.green("finished") + chalk.cyan(` in ${time}`))
     log(`output: ${output}`)
     return;
   }
   main();
-  
+
   function step(n) {
     if (code[n] == "\r\n") {
+      func = false;
+      fs_declared[fnum] = true;
+
       line++;
       col = 1;
       return;
     }
-    
+
     if (isNaN(code[n].slice(0, 1))) {
       if (!(code[n].slice(0, 1) in instructions)) {
         errTrace("invalid instruction");
@@ -129,21 +171,26 @@ function parse(code, file, delay) {
         errTrace("number literal missing an instruction");
       }
     }
-    
+
     if (!isNaN(code[n].slice(1, 2))) {
       errTrace("attempt to chain number literals");
     }
-    
+
+    if (func) {
+      functions[fnum] += code[n];
+      return;
+    }
+
     num = Number(code[n].slice(0, 1));
     col++;
-    
+
     var instruction = code[n].slice(1, 2);
     if (!(instruction in instructions)) {
       errTrace("invalid instruction");
     }
-    
+
     instructions[instruction]();
-    
+
     col++;
   }
 }
