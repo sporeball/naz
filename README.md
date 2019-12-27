@@ -21,6 +21,9 @@ $ node naz.js filename.naz
 - `0-9` - number literal. exactly **one** of these **must** be placed before every instruction.
 - `a` - adds the value before it to the register.
 - `d` - divides the register by the value before it, rounding down.
+- `f` - function command:
+  - opcode 0 - *executes* a function.
+  - opcode 1 - *declares* a function.
 - `h` - halts program execution.
 - `m` - multiplies the register by the value before it.
 - `o` - outputs a value determined by the value in the register:
@@ -29,6 +32,11 @@ $ node naz.js filename.naz
   - 32-126 - outputs an ASCII value
 - `p` - divides the register by the value before it, then sets the register equal to the remainder.
 - `s` - subtracts the value before it from the register.
+- `x` - sets the current opcode.
+
+### opcodes
+- `0` - normal operation. commands will execute one at a time, in order.
+- `1` - function write. all commands will become part of the function referenced through use of the `f` command until a newline is parsed.
 
 #### notes
 - the value in the register must be between -127 and 127 inclusive. if an instruction causes the register to go outside these values, program execution will **immediately halt**.

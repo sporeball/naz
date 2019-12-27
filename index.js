@@ -19,7 +19,10 @@ spinner.spinner = {
 
 var filename;
 
-var register = num = fnum = ptr = 0;
+var opcode = 0;
+var register = 0;
+var num = 0;
+var fnum = 0;
 var line = col = 1;
 
 var output = ""; // output
@@ -56,15 +59,19 @@ function parse(code, file, delay) {
 
     // program flow instructions
     "f": () => {
-      func = true;
       fnum = num;
-      if (fs_declared[fnum]) {
+      if (opcode == 0) {
+        if (functions[fnum] == "") {
+          errTrace("use of undeclared function");
+        }
         for (var i = 0; i < functions[fnum].length; i += 2) {
           let val = functions[fnum].substr(i, 2);
           num = Number(val.slice(0, 1));
           let instruction = val.slice(1, 2);
           instructions[instruction]();
         }
+      } else if (opcode == 1) {
+        func = true;
       }
     },
     "h": () => {
@@ -87,6 +94,15 @@ function parse(code, file, delay) {
       for (let i = 0; i < num; i++) {
         output += val;
       }
+    },
+
+    // special instructions
+    "x": () => {
+      if (num > 1) {
+        errTrace("invalid opcode");
+      }
+
+      opcode = num;
     }
   }
 
@@ -103,18 +119,18 @@ function parse(code, file, delay) {
     9: ""
   };
 
-  var fs_declared = {
-    0: false,
-    1: false,
-    2: false,
-    3: false,
-    4: false,
-    5: false,
-    6: false,
-    7: false,
-    8: false,
-    9: false
-  };
+  // var fs_declared = {
+  //   0: false,
+  //   1: false,
+  //   2: false,
+  //   3: false,
+  //   4: false,
+  //   5: false,
+  //   6: false,
+  //   7: false,
+  //   8: false,
+  //   9: false
+  // };
 
   function chkRegister() {
     if (register < -127 || register > 127) {
@@ -154,10 +170,12 @@ function parse(code, file, delay) {
   function step(n) {
     if (code[n] == "\r\n") {
       func = false;
-      fs_declared[fnum] = true;
 
       line++;
       col = 1;
+
+      if (opcode == 1) { opcode = 0; }
+
       return;
     }
 
