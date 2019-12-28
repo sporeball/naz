@@ -5,10 +5,12 @@
   MIT license
 */
 
+// dependencies
 const chalk = require("chalk");
 const perf = require("execution-time")();
 const ms = require("pretty-ms");
 
+// spinner code
 const ora = require("ora");
 const spinner = ora("running...")
 spinner.color = "yellow";
@@ -21,14 +23,15 @@ var filename;
 
 var opcode = 0;
 var register = 0;
-var num = 0;
-var fnum = 0;
+var num = 0; // number to be used for the next instruction
+var fnum = 0; // number to be used when executing the f command
+var i = 0; // the step the interpreter is on
 var line = col = 1;
 
-var output = ""; // output
+var output = "";
 
-var halt = false; // halt flag
-var func = false; // function flag
+var halt = false; // whether to halt the interpreter
+var func = false; // are we in the middle of declaring a function?
 
 function parse(code, file, delay) {
   filename = file;
@@ -106,6 +109,7 @@ function parse(code, file, delay) {
     }
   }
 
+  // all functions start undeclared
   var functions = {
     0: "",
     1: "",
@@ -119,19 +123,6 @@ function parse(code, file, delay) {
     9: ""
   };
 
-  // var fs_declared = {
-  //   0: false,
-  //   1: false,
-  //   2: false,
-  //   3: false,
-  //   4: false,
-  //   5: false,
-  //   6: false,
-  //   7: false,
-  //   8: false,
-  //   9: false
-  // };
-
   function chkRegister() {
     if (register < -127 || register > 127) {
       errTrace("register value out of bounds");
@@ -144,7 +135,7 @@ function parse(code, file, delay) {
     });
   }
 
-  var i = 0;
+  // main function
   async function main() {
     spinner.start();
     perf.start();
@@ -156,6 +147,7 @@ function parse(code, file, delay) {
       i++;
     }
 
+    // stop
     const results = perf.stop();
     const time = ms(Number(results.time.toFixed(0)));
 
@@ -168,6 +160,7 @@ function parse(code, file, delay) {
   main();
 
   function step(n) {
+    // newline
     if (code[n] == "\r\n") {
       func = false;
 
@@ -194,6 +187,8 @@ function parse(code, file, delay) {
       errTrace("attempt to chain number literals");
     }
 
+    // the instruction is formatted correctly, so we continue
+
     if (func) {
       functions[fnum] += code[n];
       return;
@@ -207,12 +202,14 @@ function parse(code, file, delay) {
       errTrace("invalid instruction");
     }
 
+    // everything's correct, run the instruction
     instructions[instruction]();
 
     col++;
   }
 }
 
+// utils
 log = str => { console.log(chalk.white(str)) }
 info = str => { log(chalk.cyan(str)) }
 success = str => { log(chalk.green(str)) }
@@ -233,6 +230,7 @@ errTrace = str => {
 
 trace = () => { info(`  at ${filename}:${line}:${col}`); }
 
+// exports
 exports.parse = parse;
 exports.log = log;
 exports.warn = warn;
