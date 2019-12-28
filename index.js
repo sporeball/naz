@@ -29,7 +29,7 @@ var fnum = 0; // number to be used when executing the f command
 var vnum = 0; // number to be used when executing the v command
 
 var jnum = 0; // number of the function to execute conditionally
-var cnum = 0; // number to check against
+var cnum = -999; // number to check against
 
 var i = 0; // the step the interpreter is on
 var line = col = 1;
@@ -131,9 +131,9 @@ function parse(code, file, delay) {
         errTrace("conditionals should run in opcode 3");
       }
       jnum = num;
+      chkCnum();
       if (register < cnum) {
-        num = jnum;
-        instructions["f"]();
+        conditional();
       }
     },
     "e": () => {
@@ -141,9 +141,9 @@ function parse(code, file, delay) {
         errTrace("conditionals should run in opcode 3");
       }
       jnum = num;
+      chkCnum();
       if (register == cnum) {
-        num = jnum;
-        instructions["f"]();
+        conditional();
       }
     },
     "g": () => {
@@ -151,9 +151,9 @@ function parse(code, file, delay) {
         errTrace("conditionals should run in opcode 3");
       }
       jnum = num;
+      chkCnum();
       if (register > cnum) {
-        num = jnum;
-        instructions["f"]();
+        conditional();
       }
     },
 
@@ -200,6 +200,20 @@ function parse(code, file, delay) {
     if (register < -127 || register > 127) {
       errTrace("register value out of bounds");
     }
+  }
+
+  // check if we've actually set cnum
+  function chkCnum() {
+    if (cnum == -999) {
+      errTrace("number to check against must be defined");
+    }
+  }
+
+  // execute a correctly formatted conditional instruction
+  function conditional() {
+    num = jnum;
+    instructions["f"]();
+    cnum = -999; // reset cnum
   }
 
   function sleep(ms) {
@@ -268,16 +282,16 @@ function parse(code, file, delay) {
       return;
     }
 
-    if (opcode == 2 && code[n].slice(1, 2) != "v") {
-      errTrace("improper use of opcode 2");
-    }
-
     num = Number(code[n].slice(0, 1));
     col++;
 
     var instruction = code[n].slice(1, 2);
     if (!(instruction in instructions)) {
       errTrace("invalid instruction");
+    }
+
+    if (opcode == 2 && code[n].slice(1, 2) != "v") {
+      errTrace("improper use of opcode 2");
     }
 
     // everything's correct, run the instruction
