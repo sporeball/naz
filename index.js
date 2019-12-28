@@ -23,9 +23,14 @@ var filename;
 
 var opcode = 0;
 var register = 0;
+
 var num = 0; // number to be used for the next instruction
 var fnum = 0; // number to be used when executing the f command
 var vnum = 0; // number to be used when executing the v command
+
+var jnum = 0; // number of the function to execute conditionally
+var cnum = 0; // number to check against
+
 var i = 0; // the step the interpreter is on
 var line = col = 1;
 
@@ -67,7 +72,7 @@ function parse(code, file, delay) {
     // program flow instructions
     "f": () => {
       fnum = num;
-      if (opcode == 0) {
+      if (opcode == 0 || opcode == 3) {
         if (functions[fnum] == "") {
           errTrace("use of undeclared function");
         }
@@ -112,12 +117,49 @@ function parse(code, file, delay) {
       } else if (opcode == 2) {
         variables[vnum] = register;
         opcode = 0;
+      } else if (opcode == 3) {
+        if (variables[vnum] == -999) {
+          errTrace("use of undeclared variable");
+        }
+        cnum = variables[vnum];
+      }
+    },
+
+    // conditional instructions
+    "l": () => {
+      if (opcode != 3) {
+        errTrace("conditionals should run in opcode 3");
+      }
+      jnum = num;
+      if (register < cnum) {
+        num = jnum;
+        instructions[f]();
+      }
+    },
+    "e": () => {
+      if (opcode != 3) {
+        errTrace("conditionals should run in opcode 3");
+      }
+      jnum = num;
+      if (register == cnum) {
+        num = jnum;
+        instructions[f]();
+      }
+    },
+    "g": () => {
+      if (opcode != 3) {
+        errTrace("conditionals should run in opcode 3");
+      }
+      jnum = num;
+      if (register > cnum) {
+        num = jnum;
+        instructions[f]();
       }
     },
 
     // special instructions
     "x": () => {
-      if (num > 2) {
+      if (num > 3) {
         errTrace("invalid opcode");
       }
 
