@@ -57,6 +57,9 @@ function parse(code, file, delay) {
       chkRegister();
     },
     "p": () => {
+      if (num == 0) {
+        errTrace("division by zero");
+      }
       register = register % num;
     },
 
