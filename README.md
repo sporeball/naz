@@ -31,9 +31,9 @@ $ node naz.js filename.naz
 - `l` - conditional less than. executes a function if the value in the register is *less than* the value of a variable.
 - `m` - multiplies the register by the value before it.
 - `o` - outputs a value determined by the value in the register:
-  - 0-9 - outputs that number
-  - 10 - outputs a newline
-  - 32-126 - outputs an ASCII value
+  - 0-9 - outputs that number.
+  - 10 - outputs a newline.
+  - 32-126 - outputs an ASCII value.
 - `p` - divides the register by the value before it, then sets the register equal to the remainder.
 - `r` - sets the register equal to the ASCII value of the *n*-th character of the input string, then removes that character from the input.
 - `s` - subtracts the value before it from the register.
@@ -46,7 +46,7 @@ $ node naz.js filename.naz
 - `0` - normal operation. commands will execute one at a time, in order.
 - `1` - function write. commands will become part of the function referenced through use of the `f` command until a newline is parsed.
 - `2` - variable write. only the `v` command will be accepted, after which the interpreter will return to opcode 0.
-- `3` - conditional opcode. the interpreter **must** parse a call to the `v` command, followed by a call to a conditional instruction (`l`, `e` or `g`). afterwards, the interpreter will return to opcode 0..
+- `3` - conditional opcode. the interpreter **must** parse a call to the `v` command, followed by a call to a conditional instruction (`l`, `e` or `g`). afterwards, the interpreter will return to opcode 0.
 
 #### notes
 - the value in the register must be between -127 and 127 inclusive. if an instruction causes the register to go outside these values, program execution will **immediately halt**.
