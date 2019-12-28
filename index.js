@@ -128,7 +128,7 @@ function parse(code, file, delay) {
     // conditional instructions
     "l": () => {
       if (opcode != 3) {
-        errTrace("conditionals should run in opcode 3");
+        errTrace("conditionals must run in opcode 3");
       }
       jnum = num;
       chkCnum();
@@ -138,7 +138,7 @@ function parse(code, file, delay) {
     },
     "e": () => {
       if (opcode != 3) {
-        errTrace("conditionals should run in opcode 3");
+        errTrace("conditionals must run in opcode 3");
       }
       jnum = num;
       chkCnum();
@@ -148,7 +148,7 @@ function parse(code, file, delay) {
     },
     "g": () => {
       if (opcode != 3) {
-        errTrace("conditionals should run in opcode 3");
+        errTrace("conditionals must run in opcode 3");
       }
       jnum = num;
       chkCnum();
