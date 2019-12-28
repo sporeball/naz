@@ -18,6 +18,7 @@ function naz() {
   var filename;
 
   var delay = 1;
+  var input = "";
 
   if (file.slice(-4) != ".naz") {
     runnerErr("not a .naz file");
@@ -34,6 +35,11 @@ function naz() {
     delay = args[idx + 1];
   }
 
+  if (args.includes("-i") || args.includes("--input")) {
+    let idx = args.findIndex(v => v === "-i" || v === "--input");
+    input = args[idx + 1];
+  }
+
   // get file contents
   // also normalizes line endings to CRLF
   var contents = eol.crlf(fs.readFileSync(path.join(__dirname, file), {encoding: "utf-8"}, function(){}));
@@ -42,7 +48,7 @@ function naz() {
     code.push(contents.substr(i, 2));
   }
 
-  Naz.parse(code, filename, delay);
+  Naz.parse(code, filename, delay, input);
 }
 
 runnerErr = str => {

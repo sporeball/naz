@@ -16,6 +16,7 @@ $ node naz.js filename.naz
 
 ### flags
 - `-d` / `--delay` - sets the delay between execution steps (default: 1ms) (optional)
+- `-i` / `--input` - sets the string to use as input, to be read by the `r` command (default: none) (optional)
 
 ### command reference
 - `0-9` - number literal. exactly **one** of these **must** be placed before every instruction.
@@ -34,6 +35,7 @@ $ node naz.js filename.naz
   - 10 - outputs a newline
   - 32-126 - outputs an ASCII value
 - `p` - divides the register by the value before it, then sets the register equal to the remainder.
+- `r` - sets the register equal to the ASCII value of the *n*-th character of the input string, then removes that character from the input.
 - `s` - subtracts the value before it from the register.
 - `v` - variable command:
   - opcode 0 - sets the register equal to a variable.

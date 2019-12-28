@@ -34,13 +34,15 @@ var cnum = -999; // number to check against
 var i = 0; // the step the interpreter is on
 var line = col = 1;
 
+var input;
 var output = "";
 
 var halt = false; // whether to halt the interpreter
 var func = false; // are we in the middle of declaring a function?
 
-function parse(code, file, delay) {
+function parse(code, file, delay, input) {
   filename = file;
+  input = input;
 
   var instructions = {
     // arithmetic instructions
@@ -158,6 +160,19 @@ function parse(code, file, delay) {
     },
 
     // special instructions
+    "r": () => {
+      if (input == "") {
+        errTrace("no input provided");
+      }
+
+      let val = input.charCodeAt(-1 + num);
+      if (Number.isNaN(val)) {
+        errTrace("input string not long enough")
+      }
+
+      register = val;
+      input = input.replace(input.slice(num - 1, num), "");
+    },
     "x": () => {
       if (num > 3) {
         errTrace("invalid opcode");
