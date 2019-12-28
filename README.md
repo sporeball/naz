@@ -32,11 +32,15 @@ $ node naz.js filename.naz
   - 32-126 - outputs an ASCII value
 - `p` - divides the register by the value before it, then sets the register equal to the remainder.
 - `s` - subtracts the value before it from the register.
+- `v` - variable command:
+  - opcode 0: sets the register equal to a variable.
+  - opcode 2: sets a variable equal to the value in the register.
 - `x` - sets the current opcode.
 
 ### opcodes
 - `0` - normal operation. commands will execute one at a time, in order.
-- `1` - function write. all commands will become part of the function referenced through use of the `f` command until a newline is parsed.
+- `1` - function write. commands will become part of the function referenced through use of the `f` command until a newline is parsed.
+- `2` - variable write. only the `v` command will be accepted, after which the parser will return to opcode 0.
 
 #### notes
 - the value in the register must be between -127 and 127 inclusive. if an instruction causes the register to go outside these values, program execution will **immediately halt**.

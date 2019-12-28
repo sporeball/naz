@@ -25,6 +25,7 @@ var opcode = 0;
 var register = 0;
 var num = 0; // number to be used for the next instruction
 var fnum = 0; // number to be used when executing the f command
+var vnum = 0; // number to be used when executing the v command
 var i = 0; // the step the interpreter is on
 var line = col = 1;
 
@@ -101,10 +102,22 @@ function parse(code, file, delay) {
         output += val;
       }
     },
+    "v": () => {
+      vnum = num;
+      if (opcode == 0) {
+        if (variables[vnum] == -999) {
+          errTrace("use of undeclared variable");
+        }
+        register = variables[vnum];
+      } else if (opcode == 2) {
+        variables[vnum] = register;
+        opcode = 0;
+      }
+    },
 
     // special instructions
     "x": () => {
-      if (num > 1) {
+      if (num > 2) {
         errTrace("invalid opcode");
       }
 
@@ -124,6 +137,21 @@ function parse(code, file, delay) {
     7: "",
     8: "",
     9: ""
+  };
+
+  // all variables start undeclared
+  var variables = {
+    // we can put any arbitrary default value here as long as it's unusable
+    0: -999,
+    1: -999,
+    2: -999,
+    3: -999,
+    4: -999,
+    5: -999,
+    6: -999,
+    7: -999,
+    8: -999,
+    9: -999
   };
 
   function chkRegister() {
@@ -192,9 +220,14 @@ function parse(code, file, delay) {
 
     // the instruction is formatted correctly, so we continue
 
-    if (func) {
+    if (func) { // are we in the middle of declaring a function?
+      // add the parsed command to the function we're declaring
       functions[fnum] += code[n];
       return;
+    }
+
+    if (opcode == 2 && code[n].slice(1, 2) != "v") {
+      errTrace("improper use of opcode 2");
     }
 
     num = Number(code[n].slice(0, 1));
