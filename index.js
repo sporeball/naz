@@ -133,7 +133,7 @@ function parse(code, file, delay) {
       jnum = num;
       if (register < cnum) {
         num = jnum;
-        instructions[f]();
+        instructions["f"]();
       }
     },
     "e": () => {
@@ -143,7 +143,7 @@ function parse(code, file, delay) {
       jnum = num;
       if (register == cnum) {
         num = jnum;
-        instructions[f]();
+        instructions["f"]();
       }
     },
     "g": () => {
@@ -153,7 +153,7 @@ function parse(code, file, delay) {
       jnum = num;
       if (register > cnum) {
         num = jnum;
-        instructions[f]();
+        instructions["f"]();
       }
     },
 
