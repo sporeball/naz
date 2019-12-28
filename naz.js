@@ -5,11 +5,12 @@
   MIT license
 */
 
-const Naz = require("./index.js")
+const Naz = require("./index.js");
 
 const chalk = require("chalk");
-const fs = require("fs")
-const path = require("path")
+const fs = require("fs");
+const path = require("path");
+const eol = require("eol");
 
 function naz() {
   var args = process.argv.slice(2);
@@ -33,7 +34,9 @@ function naz() {
     delay = args[idx + 1];
   }
 
-  var contents = fs.readFileSync(path.join(__dirname, file), {encoding: "utf-8"}, function(){});
+  // get file contents
+  // also normalizes line endings to CRLF
+  var contents = eol.crlf(fs.readFileSync(path.join(__dirname, file), {encoding: "utf-8"}, function(){}));
   var code = [];
   for (var i = 0; i < contents.length; i += 2) {
     code.push(contents.substr(i, 2));
