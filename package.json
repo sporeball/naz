@@ -1,7 +1,7 @@
 {
   "name": "naz",
   "version": "1.0.0",
-  "description": "a one-register esolang with concise commands",
+  "description": "a concise esolang with simple commands and a single register",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
