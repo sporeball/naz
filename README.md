@@ -1,5 +1,5 @@
 # naz
-**naz** is a concise esoteric programming language with simple commands and a single register.
+**naz** is a JavaScript-based esolang where every command is named by a number and a letter.
 
 ### usage
 first, clone this repository, and install its dependencies:
