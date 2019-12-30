@@ -274,6 +274,10 @@ function parse(code, file, delay, input) {
       return;
     }
 
+    if (code[n] == "0x") {
+      func = false;
+    }
+
     if (isNaN(code[n].slice(0, 1))) {
       if (!(code[n].slice(0, 1) in instructions)) {
         errTrace("invalid instruction");
