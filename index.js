@@ -105,9 +105,7 @@ function parse(code, file, delay, input) {
         errTrace("invalid output value");
       }
 
-      for (let i = 0; i < num; i++) {
-        output += val;
-      }
+      output += val.repeat(num);
     },
     "v": () => {
       vnum = num;
