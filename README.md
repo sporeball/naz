@@ -17,6 +17,7 @@ $ node naz.js filename.naz
 ### flags
 - `-d` / `--delay` - sets the delay between execution steps (default: 1ms) (optional)
 - `-i` / `--input` - sets the string to use as input, to be read by the `r` command (default: none) (optional)
+- `-f` / `--file` - sets the file whose contents will be read by the `r` command. this takes precedence over the `-i` flag (default: none) (optional)
 
 ### command reference
 - `0-9` - number literal. exactly **one** of these **must** be placed before every instruction.

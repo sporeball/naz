@@ -40,9 +40,22 @@ function naz() {
     input = args[idx + 1];
   }
 
+  if (args.includes("-f") || args.includes("--file")) {
+    let idx = args.findIndex(v => v === "-f" || v === "--file");
+    try {
+      input = fs.readFileSync(path.join(__dirname, args[idx + 1]), {encoding: "utf-8"}, function(){});
+    } catch (e) {
+        runnerErr("input file not found");
+    }
+  }
+
   // get file contents
   // also normalizes line endings to CRLF
-  var contents = eol.crlf(fs.readFileSync(path.join(__dirname, file), {encoding: "utf-8"}, function(){}));
+  try {
+    var contents = eol.crlf(fs.readFileSync(path.join(__dirname, file), {encoding: "utf-8"}, function(){}));
+  } catch (e) {
+    runnerErr("file not found");
+  }
   var code = [];
   for (var i = 0; i < contents.length; i += 2) {
     code.push(contents.substr(i, 2));
