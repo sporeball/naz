@@ -243,7 +243,14 @@ function parse(code, file, delay, input) {
     perf.start();
 
     while (i < code.length) {
-      step(i);
+      try {
+        step(i);
+      } catch (e) {
+        if (e instanceof RangeError) {
+          errTrace("too much recursion");
+        }
+      }
+
       if (halt) break;
       await sleep(delay);
       i++;
