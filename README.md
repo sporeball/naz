@@ -62,6 +62,9 @@ the following naz program will add 9 to the register, multiply by 7, and add 2 (
 
 for more complicated examples, check the [examples folder](https://github.com/sporeball/naz/tree/master/examples).
 
+### computational class
+naz is at least as powerful as a finite state automaton, because it can implement the esolang [dd](https://esolangs.org/wiki/Dd). given some input file, the example program [dd.naz](https://github.com/sporeball/naz/blob/master/examples/dd.naz) will follow the dd specification and stop reading input when it encounters the control character STX (U+0002).
+
 ### thanks
 the naz interpreter and runner are heavily based on those of the fantastic [\\/\\/>](https://github.com/torcado194/worm), by [torcado](https://github.com/torcado194). <3
 
