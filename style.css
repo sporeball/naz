@@ -10,12 +10,8 @@ html {
   min-height:100%
 }
 
-h1 {
+h1, h2 {
   font-family:"Abel"
-}
-
-#tryit {
-  display:none
 }
 
 #editor, #result {
@@ -37,7 +33,7 @@ h1 {
   resize:none
 }
 
-#run {
+#run, #disclaimer {
   margin-top:1em
 }
 
