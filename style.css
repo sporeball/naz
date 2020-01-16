@@ -1,0 +1,54 @@
+* {
+  margin:0;
+  border:0;
+  padding:0;
+  box-sizing:border-box
+}
+
+html {
+  position:relative;
+  min-height:100%
+}
+
+h1 {
+  font-family:"Abel"
+}
+
+#tryit {
+  display:none
+}
+
+#editor, #result {
+  width:300px;
+  height:200px;
+  display:inline-block
+}
+
+#editor {
+  margin-right:0.5em
+}
+
+#result {
+  margin-left:0.5em;
+  padding-left:5px;
+  background-color:#272822;
+  color: #F8F8F2;
+  font:16px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+  resize:none
+}
+
+#run {
+  margin-top:1em
+}
+
+@media screen and (max-width:768px) {
+  #tryit {
+    display:none
+  }
+}
+
+@media screen and (max-width:576px) {
+  .jumbotron {
+    padding:1rem 2rem
+  }
+}
