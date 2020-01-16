@@ -23,6 +23,8 @@ var output = "";
 var halt = false; // whether to halt the interpreter
 var func = false; // are we in the middle of declaring a function?
 
+var code = [];
+
 var c; // the code inside the ace editor
 
 var run = document.getElementById("run");
@@ -69,6 +71,7 @@ function parse(code, input) {
           let val = functions[fnum].substr(i, 2);
           num = Number(val.slice(0, 1));
           let instruction = val.slice(1, 2);
+          if (instruction == "") return;
           instructions[instruction]();
         }
       } else if (opcode == 1) {
@@ -253,7 +256,9 @@ function parse(code, input) {
       line++;
       col = 1;
 
-      if (opcode == 1) { opcode = 0; }
+      if (opcode == 1) {
+        opcode = 0;
+      }
 
       return;
     }
@@ -333,7 +338,7 @@ function exec() {
   
   let data = eol.crlf(editor.getSession().getValue());
 
-  var code = [];
+  code = [];
   for (var i = 0; i < data.length; i += 2) {
     code.push(data.substr(i, 2));
   }
