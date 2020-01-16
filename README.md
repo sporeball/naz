@@ -2,6 +2,8 @@
 **naz** is a JavaScript-based esolang where every command is named by a number and a letter.
 
 ### usage
+
+#### node
 first, clone this repository, and install its dependencies:
 
 ```
@@ -14,10 +16,8 @@ you can then run any naz program like so:
 $ node naz.js filename.naz
 ```
 
-### flags
-- `-d` / `--delay` - sets the delay between execution steps (default: 1ms) (optional)
-- `-i` / `--input` - sets the string to use as input, to be read by the `r` command (default: none) (optional)
-- `-f` / `--file` - sets the file whose contents will be read by the `r` command. this takes precedence over the `-i` flag (default: none) (optional)
+#### online
+you can also experiment with naz using the **beta** [web-based interpreter](https://sporeball.dev/naz)! this is a lot more unstable compared to the original Node-based implementation, but should work if you're in a hurry!
 
 ### command reference
 - `0-9` - number literal. exactly **one** of these **must** be placed before every instruction.
@@ -48,6 +48,11 @@ $ node naz.js filename.naz
 - `1` - function write. commands will become part of the function referenced through use of the `f` command until a newline is parsed.
 - `2` - variable write. only the `v` command will be accepted, after which the interpreter will return to opcode 0.
 - `3` - conditional opcode. the interpreter **must** parse a call to the `v` command, followed by a call to a conditional instruction (`l`, `e` or `g`). afterwards, the interpreter will return to opcode 0.
+
+### command line flags
+- `-d` / `--delay` - sets the delay between execution steps (default: 1ms) (optional)
+- `-i` / `--input` - sets the string to use as input, to be read by the `r` command (default: none) (optional)
+- `-f` / `--file` - sets the file whose contents will be read by the `r` command. this takes precedence over the `-i` flag (default: none) (optional)
 
 #### notes
 - the value in the register must be between -127 and 127 inclusive. if an instruction causes the register to go outside these values, program execution will **immediately halt**.
