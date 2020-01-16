@@ -39,7 +39,7 @@ function parse(code, input) {
     },
     "d": () => {
       if (num == 0) {
-        err("division by zero");
+        // err("division by zero");
       }
       register = Math.floor(register / num);
     },
@@ -53,7 +53,7 @@ function parse(code, input) {
     },
     "p": () => {
       if (num == 0) {
-        err("division by zero");
+        // err("division by zero");
       }
       register = register % num;
     },
@@ -63,7 +63,7 @@ function parse(code, input) {
       fnum = num;
       if (opcode == 0 || opcode == 3) {
         if (functions[fnum] == "") {
-          err("use of undeclared function");
+          // err("use of undeclared function");
         }
         for (var i = 0; i <= functions[fnum].length; i += 2) {
           let val = functions[fnum].substr(i, 2);
@@ -89,7 +89,7 @@ function parse(code, input) {
       } else if (register > 31 && register < 127) {
         val = String.fromCharCode(register);
       } else {
-        err("invalid output value");
+        // err("invalid output value");
       }
 
       output += val.repeat(num);
@@ -98,7 +98,7 @@ function parse(code, input) {
       vnum = num;
       if (opcode == 0) {
         if (variables[vnum] == -999) {
-          err("use of undeclared variable");
+          // err("use of undeclared variable");
         }
         register = variables[vnum];
       } else if (opcode == 2) {
@@ -106,7 +106,7 @@ function parse(code, input) {
         opcode = 0;
       } else if (opcode == 3) {
         if (variables[vnum] == -999) {
-          err("use of undeclared variable");
+          // err("use of undeclared variable");
         }
         cnum = variables[vnum];
       }
@@ -115,7 +115,7 @@ function parse(code, input) {
     // conditional instructions
     "l": () => {
       if (opcode != 3) {
-        err("conditionals must run in opcode 3");
+        // err("conditionals must run in opcode 3");
       }
       jnum = num;
       chkCnum();
@@ -125,7 +125,7 @@ function parse(code, input) {
     },
     "e": () => {
       if (opcode != 3) {
-        err("conditionals must run in opcode 3");
+        // err("conditionals must run in opcode 3");
       }
       jnum = num;
       chkCnum();
@@ -135,7 +135,7 @@ function parse(code, input) {
     },
     "g": () => {
       if (opcode != 3) {
-        err("conditionals must run in opcode 3");
+        // err("conditionals must run in opcode 3");
       }
       jnum = num;
       chkCnum();
@@ -147,12 +147,12 @@ function parse(code, input) {
     // special instructions
     "r": () => {
       if (input == "") {
-        err("no input provided");
+        // err("no input provided");
       }
 
       let val = input.charCodeAt(-1 + num);
       if (Number.isNaN(val)) {
-        err("input string not long enough")
+        // err("input string not long enough");
       }
 
       register = val;
@@ -160,7 +160,7 @@ function parse(code, input) {
     },
     "x": () => {
       if (num > 3) {
-        err("invalid opcode");
+        // err("invalid opcode");
       }
 
       opcode = num;
@@ -198,14 +198,14 @@ function parse(code, input) {
 
   function chkRegister() {
     if (register < -127 || register > 127) {
-      err("register value out of bounds");
+      // err("register value out of bounds");
     }
   }
 
   // check if we've actually set cnum
   function chkCnum() {
     if (cnum == -999) {
-      err("number to check against must be defined");
+      // err("number to check against must be defined");
     }
   }
 
@@ -223,15 +223,16 @@ function parse(code, input) {
   }
 
   // main function
-  async function main() {main:{
+  async function main() {
     while (i < code.length) {
       try {
         step(i);
       } catch (e) {
-        return;
         if (e instanceof RangeError) {
-          err("too much recursion");
+          // err("too much recursion");
         }
+        err("");
+        return;
       }
 
       await sleep(1);
@@ -241,7 +242,7 @@ function parse(code, input) {
     log(`finished`)
     log(`\noutput: ${output}`)
     return;
-  }}
+  }
   main();
 
   function step(n) {
@@ -263,17 +264,17 @@ function parse(code, input) {
 
     if (isNaN(code[n].slice(0, 1))) {
       if (!(code[n].slice(0, 1) in instructions)) {
-        err("invalid instruction");
+        // err("invalid instruction");
       }
-      err("missing number literal");
+      // err("missing number literal");
     } else {
       if (code[n].slice(1, 2) == "\r") {
-        err("number literal missing an instruction");
+        // err("number literal missing an instruction");
       }
     }
 
     if (!isNaN(code[n].slice(1, 2))) {
-      err("attempt to chain number literals");
+      // err("attempt to chain number literals");
     }
 
     // the instruction is formatted correctly, so we continue
@@ -289,11 +290,11 @@ function parse(code, input) {
 
     var instruction = code[n].slice(1, 2);
     if (!(instruction in instructions)) {
-      err("invalid instruction");
+      // err("invalid instruction");
     }
 
     if (opcode == 2 && code[n].slice(1, 2) != "v") {
-      err("improper use of opcode 2");
+      // err("improper use of opcode 2");
     }
 
     // everything's correct, run the instruction
@@ -307,9 +308,8 @@ function parse(code, input) {
 log = str => { result.innerHTML += str; }
 
 err = str => {
-  log(`error: ${str}`);
+  log(`error ${str}`);
   log(`\n  at ${line}:${col}`);
-  break main;
 }
 
 function reset() {
@@ -328,25 +328,14 @@ function reset() {
   func = false;
 }
 
-// ace code
-
-editor.getSession().on('change', function () {
-  c = editor.getSession().getValue();
-});
-
-editor.on("paste", function() {
-  let v = editor.getSession().getValue();
-  editor.setValue(v.replace(/\r\n|\n\r|\r/g, "\r\n"));
-});
-
-c = editor.getSession().getValue();
-
 function exec() {
   reset();
+  
+  let data = eol.crlf(editor.getSession().getValue());
 
   var code = [];
-  for (var i = 0; i < c.length; i += 2) {
-    code.push(c.substr(i, 2));
+  for (var i = 0; i < data.length; i += 2) {
+    code.push(data.substr(i, 2));
   }
 
   result.innerHTML = "";
