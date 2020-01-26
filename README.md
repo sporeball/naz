@@ -21,27 +21,27 @@ you can also experiment with naz using the **beta** [web-based interpreter](http
 
 ### command reference
 - `0-9` - number literal. exactly **one** of these **must** be placed before every instruction.
-- `a` - adds the value before it to the register.
-- `d` - divides the register by the value before it, rounding down.
-- `e` - conditional equal to. executes a function if the value in the register is *equal to* the value of a variable.
+- `a` - adds *n* to the register.
+- `d` - divides the register by *n*, rounding down.
+- `e` - conditional equal to. executes a function if the value in the register is *equal to* the value of variable *n*.
 - `f` - function command:
-  - opcode 0 - *executes* a function.
-  - opcode 1 - *declares* a function.
-- `g` - conditional greater than. executes a function if the value in the register is *greater than* the value of a variable.
+  - opcode 0 - *executes* function *n*.
+  - opcode 1 - *declares* function *n*.
+- `g` - conditional greater than. executes a function if the value in the register is *greater than* the value of variable *n*.
 - `h` - halts program execution.
-- `l` - conditional less than. executes a function if the value in the register is *less than* the value of a variable.
-- `m` - multiplies the register by the value before it.
+- `l` - conditional less than. executes a function if the value in the register is *less than* the value of variable *n*.
+- `m` - multiplies the register by *n*.
 - `o` - outputs a value determined by the value in the register:
   - 0-9 - outputs that number.
   - 10 - outputs a newline.
   - 32-126 - outputs an ASCII value.
-- `p` - divides the register by the value before it, then sets the register equal to the remainder.
+- `p` - divides the register by *n*, then sets the register equal to the remainder.
 - `r` - sets the register equal to the ASCII value of the *n*-th character of the input string, then removes that character from the input.
-- `s` - subtracts the value before it from the register.
+- `s` - subtracts *n* from the register.
 - `v` - variable command:
-  - opcode 0 - sets the register equal to a variable.
-  - opcode 2 - sets a variable equal to the value in the register.
-- `x` - sets the current opcode.
+  - opcode 0 - sets the register equal to the value of variable *n*.
+  - opcode 2 - sets variable *n* equal to the value in the register.
+- `x` - sets the current opcode to *n*.
 
 ### opcodes
 - `0` - normal operation. commands will execute one at a time, in order.
