@@ -300,12 +300,6 @@ function parse(code, file, delay, input) {
 
     // the instruction is formatted correctly, so we continue
 
-    if (func) { // are we in the middle of declaring a function?
-      // add the parsed command to the function we're declaring
-      functions[fnum] += code[n];
-      return;
-    }
-
     num = Number(code[n].slice(0, 1));
     col++;
 
@@ -316,6 +310,12 @@ function parse(code, file, delay, input) {
 
     if (opcode == 2 && code[n].slice(1, 2) != "v") {
       errTrace("improper use of opcode 2");
+    }
+
+    if (func) { // are we in the middle of declaring a function?
+      // add the parsed command to the function we're declaring
+      functions[fnum] += code[n];
+      return;
     }
 
     // everything's correct, run the instruction
