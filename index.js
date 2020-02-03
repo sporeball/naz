@@ -224,6 +224,7 @@ function parse(code, file, delay, input) {
 
   // execute a correctly formatted conditional instruction
   function conditional() {
+    opcode = 0;
     num = jnum;
     instructions["f"]();
     cnum = -999; // reset cnum
