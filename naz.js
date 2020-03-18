@@ -20,6 +20,10 @@ function naz() {
   var delay = 1;
   var input = "";
 
+  if (file === undefined) {
+    runnerErr("a file must be passed");
+  }
+
   if (file.slice(-4) != ".naz") {
     runnerErr("not a .naz file");
   }
@@ -45,7 +49,7 @@ function naz() {
     try {
       input = fs.readFileSync(path.join(__dirname, args[idx + 1]), {encoding: "utf-8"}, function(){});
     } catch (e) {
-        runnerErr("input file not found");
+      runnerErr("input file not found");
     }
   }
 
