@@ -31,7 +31,7 @@ you can also experiment with naz using the **beta** [web-based interpreter](http
 - `h` - halts program execution.
 - `l` - conditional less than. executes a function if the value in the register is *less than* the value of variable *n*.
 - `m` - multiplies the register by *n*.
-- `n` - negate variable *n*.
+- `n` - negates variable *n*.
 - `o` - outputs a value determined by the value in the register:
   - 0-9 - outputs that number.
   - 10 - outputs a newline.
