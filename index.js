@@ -158,6 +158,12 @@ function parse(code, file, delay, input) {
     },
 
     // special instructions
+    "n": () => {
+      if (variables[num] == -999) {
+        errTrace("use of undeclared variable")
+      }
+      variables[num] = -(variables[num]);
+    },
     "r": () => {
       if (input == "") {
         errTrace("no input provided");
