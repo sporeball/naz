@@ -1,8 +1,13 @@
 var editor = ace.edit("editor");
+var session = editor.getSession();
+
 editor.setTheme("ace/theme/monokai");
 editor.setOptions({
   fontSize: 16
-})
+});
+
+session.setOption("indentedSoftWrap", false);
+session.setUseWrapMode(true);
 
 var opcode = 0;
 var register = 0;
@@ -343,7 +348,7 @@ function reset() {
 function exec() {
   reset();
 
-  let data = eol.crlf(editor.getSession().getValue());
+  let data = eol.crlf(session.getValue());
 
   code = [];
   for (var i = 0; i < data.length; i += 2) {
