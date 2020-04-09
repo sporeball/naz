@@ -14,6 +14,11 @@ h1, h2 {
   font-family:"Abel"
 }
 
+p.small {
+  margin-top:0.5rem;
+  margin-bottom:0.5rem
+}
+
 #editor, #result {
   width:300px;
   height:200px;
@@ -24,12 +29,20 @@ h1, h2 {
   margin-right:0.5em
 }
 
+#input, #result {
+  background-color:#272822;
+  color: #F8F8F2;
+  font:16px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace
+}
+
+#input {
+  padding:2px;
+  outline:none
+}
+
 #result {
   margin-left:0.5em;
   padding-left:5px;
-  background-color:#272822;
-  color: #F8F8F2;
-  font:16px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
   resize:none
 }
 

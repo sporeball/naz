@@ -29,9 +29,10 @@ var c; // the code inside the ace editor
 
 var run = document.getElementById("run");
 var result = document.getElementById("result");
+var input = document.getElementById("input");
 
 function parse(code, input) {
-  input = input;
+  console.log(input);
 
   var instructions = {
     // arithmetic instructions
@@ -148,6 +149,12 @@ function parse(code, input) {
     },
 
     // special instructions
+    "n": () => {
+      if (variables[num] == -999) {
+        // err("use of undeclared variable")
+      }
+      variables[num] = -(variables[num]);
+    },
     "r": () => {
       if (input == "") {
         // err("no input provided");
@@ -335,7 +342,7 @@ function reset() {
 
 function exec() {
   reset();
-  
+
   let data = eol.crlf(editor.getSession().getValue());
 
   code = [];
@@ -344,7 +351,7 @@ function exec() {
   }
 
   result.innerHTML = "";
-  parse(code, "");
+  parse(code, input.value);
 }
 
 exec();

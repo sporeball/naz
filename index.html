@@ -20,7 +20,9 @@
         <div id="tryit">
           <div id="editor">9a7m2a1o</div>
           <textarea id="result" disabled></textarea>
-          <button id="run" class="btn btn-dark btn-sm d-block">run</button>
+          <p class="small">input</p>
+          <input type="text" id="input" size="25">
+          <button id="run" class="btn btn-dark d-block">run</button>
           <button type="button" id="disclaimer" class="btn btn-link" data-toggle="modal" data-target="#disclaimerModal">(disclaimer)</button>
         </div>
       </center>
@@ -37,7 +39,7 @@
             </button>
           </div>
           <div class="modal-body">
-            <p>this web-based naz interpreter is <b>strictly a beta version</b> &mdash; currently, errors won't behave as expected and input to be read via the <code>r</code> command will not be accepted.</p>
+            <p>this web-based naz interpreter is <b>strictly a beta version</b> &mdash; errors won't behave as expected, and the code as a whole is still subject to change.</p>
             <p>use of the <a href="https://github.com/sporeball/naz" target="_blank">original Node.js implementation</a> is <b>highly recommended.</b></p>
           </div>
           <div class="modal-footer">
