@@ -51,12 +51,13 @@ you can also experiment with naz using the **beta** [web-based interpreter](http
 - `3` - conditional opcode. the interpreter **must** parse a call to the `v` command, followed by a call to a conditional instruction (`l`, `e` or `g`). afterwards, the interpreter will return to opcode 0.
 
 ### command line flags
+- `-u` / `--unlimited` - whether to remove the default limits on integer values (default: false)
 - `-d` / `--delay` - sets the delay between execution steps (default: 1ms) (optional)
 - `-i` / `--input` - sets the string to use as input, to be read by the `r` command (default: none) (optional)
 - `-f` / `--file` - sets the file whose contents will be read by the `r` command. this takes precedence over the `-i` flag (default: none) (optional)
 
 #### notes
-- the value in the register must be between -127 and 127 inclusive. if an instruction causes the register to go outside these values, program execution will **immediately halt**.
+- by default, the value in the register must always be between -127 and 127 inclusive, or program execution will **immediately halt**. this behavior can be disabled with the `-u` flag.
 - conditional instructions can only be run in opcode 3.
 
 ### example

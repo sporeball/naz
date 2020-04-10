@@ -20,6 +20,8 @@ function naz() {
   var delay = 1;
   var input = "";
 
+  var unlimited = false;
+
   if (file === undefined) {
     runnerErr("a file must be passed");
   }
@@ -53,6 +55,10 @@ function naz() {
     }
   }
 
+  if (args.includes("-u") || args.includes("--unlimited")) {
+    unlimited = true;
+  }
+
   // get file contents
   // also normalizes line endings to CRLF
   try {
@@ -65,7 +71,7 @@ function naz() {
     code.push(contents.substr(i, 2));
   }
 
-  Naz.parse(code, filename, delay, input);
+  Naz.parse(code, filename, delay, input, unlimited);
 }
 
 runnerErr = str => {

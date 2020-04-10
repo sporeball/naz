@@ -37,12 +37,15 @@ var line = col = 1;
 var input;
 var output = "";
 
+var u;
+
 var halt = false; // whether to halt the interpreter
 var func = false; // are we in the middle of declaring a function?
 
-function parse(code, file, delay, input) {
+function parse(code, file, delay, input, unlimited) {
   filename = file;
   input = input;
+  u = unlimited;
 
   var instructions = {
     // arithmetic instructions
@@ -216,8 +219,12 @@ function parse(code, file, delay, input) {
   };
 
   function chkRegister() {
-    if (register < -127 || register > 127) {
-      errTrace("register value out of bounds");
+    if (u) {
+    }
+    else {
+      if (register < -127 || register > 127) {
+        errTrace("register value out of bounds");
+      }
     }
   }
 
