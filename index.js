@@ -105,7 +105,12 @@ function parse(code, file, delay, input, unlimited) {
       } else if (register > 31 && register < 127) {
         val = String.fromCharCode(register);
       } else {
-        errTrace("invalid output value");
+        if (u) {
+          val = String.fromCharCode(register);
+        }
+        else {
+          errTrace("invalid output value");
+        }
       }
 
       output += val.repeat(num);
