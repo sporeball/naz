@@ -141,6 +141,7 @@ function parse(code, file, delay, input, unlimited) {
       }
       jnum = num;
       chkCnum();
+      opcode = 0;
       if (register < cnum) {
         conditional();
       }
@@ -151,6 +152,7 @@ function parse(code, file, delay, input, unlimited) {
       }
       jnum = num;
       chkCnum();
+      opcode = 0;
       if (register == cnum) {
         conditional();
       }
@@ -161,6 +163,7 @@ function parse(code, file, delay, input, unlimited) {
       }
       jnum = num;
       chkCnum();
+      opcode = 0;
       if (register > cnum) {
         conditional();
       }
@@ -243,7 +246,6 @@ function parse(code, file, delay, input, unlimited) {
 
   // execute a correctly formatted conditional instruction
   function conditional() {
-    opcode = 0;
     num = jnum;
     instructions["f"]();
     cnum = -999; // reset cnum
