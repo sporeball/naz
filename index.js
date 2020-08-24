@@ -78,11 +78,12 @@ function parse(code, file, delay, input, unlimited) {
     "f": () => {
       fnum = num;
       if (opcode == 0 || opcode == 3) {
-        if (functions[fnum] == "") {
+        let capturedNum = num
+        if (functions[capturedNum] == "") {
           errTrace("use of undeclared function");
         }
-        for (var i = 0; i <= functions[fnum].length; i += 2) {
-          let val = functions[fnum].substr(i, 2);
+        for (var i = 0; i < functions[capturedNum].length; i += 2) {
+          let val = functions[capturedNum].substr(i, 2);
           num = Number(val.slice(0, 1));
           let instruction = val.slice(1, 2);
           instructions[instruction]();
