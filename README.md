@@ -28,7 +28,7 @@ you can also experiment with naz using the **beta** [web-based interpreter](http
   - opcode 0 - *executes* function *n*.
   - opcode 1 - *declares* function *n*.
 - `g` - conditional greater than. executes a function if the value in the register is *greater than* the value of variable *n*.
-- `h` - halts program execution.
+- `h` - halts program execution. **this is meant to be used for debugging purposes only.**
 - `l` - conditional less than. executes a function if the value in the register is *less than* the value of variable *n*.
 - `m` - multiplies the register by *n*.
 - `n` - negates variable *n*.
