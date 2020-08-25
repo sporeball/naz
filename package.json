@@ -4,7 +4,7 @@
   "description": "a JavaScript-based esolang where every command is named by a number and a letter",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test.js"
   },
   "repository": {
     "type": "git",
@@ -26,5 +26,9 @@
     "log-update": "^3.3.0",
     "ora": "^4.0.3",
     "pretty-ms": "^5.1.0"
+  },
+  "devDependencies": {
+    "p-wait-for": "^3.1.0",
+    "path-exists": "^4.0.0"
   }
 }

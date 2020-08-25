@@ -9,6 +9,7 @@
 const chalk = require("chalk");
 const perf = require("execution-time")();
 const ms = require("pretty-ms");
+const fs = require("fs");
 
 // spinner code
 const ora = require("ora");
@@ -42,7 +43,7 @@ var u;
 var halt = false; // whether to halt the interpreter
 var func = false; // are we in the middle of declaring a function?
 
-function parse(code, file, delay, input, unlimited) {
+function parse(code, file, delay, input, unlimited, test) {
   filename = file;
   input = input;
   u = unlimited;
@@ -280,8 +281,10 @@ function parse(code, file, delay, input, unlimited) {
 
     spinner.stop();
 
-    if (!halt) log(chalk.green("finished") + chalk.cyan(` in ${time}`));
+    if (!halt && !test) log(chalk.green("finished") + chalk.cyan(` in ${time}`));
     log(`output: ${output}`)
+
+    if (test) fs.writeFileSync("output.txt", output, {encoding: "utf-8"}, function(){});
     return;
   }
   main();
@@ -346,6 +349,39 @@ function parse(code, file, delay, input, unlimited) {
 }
 
 // utils
+reset = () => {
+  filename = input = u = undefined;
+  opcode = register = num = fnum = vnum = jnum = i = 0;
+  line = col = 1;
+  cnum = -999;
+  output = "";
+  halt = func = false;
+  functions = {
+    0: "",
+    1: "",
+    2: "",
+    3: "",
+    4: "",
+    5: "",
+    6: "",
+    7: "",
+    8: "",
+    9: ""
+  };
+  variables = {
+    0: -999,
+    1: -999,
+    2: -999,
+    3: -999,
+    4: -999,
+    5: -999,
+    6: -999,
+    7: -999,
+    8: -999,
+    9: -999
+  };
+}
+
 log = str => { console.log(chalk.white(str)) }
 info = str => { log(chalk.cyan(str)) }
 success = str => { log(chalk.green(str)) }
@@ -368,6 +404,7 @@ trace = () => { info(`  at ${filename}:${line}:${col}`); }
 
 // exports
 exports.parse = parse;
+exports.reset = reset;
 exports.log = log;
 exports.warn = warn;
 exports.err = err;

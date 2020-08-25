@@ -71,7 +71,7 @@ function naz() {
     code.push(contents.substr(i, 2));
   }
 
-  Naz.parse(code, filename, delay, input, unlimited);
+  Naz.parse(code, filename, delay, input, unlimited, false);
 }
 
 runnerErr = str => {
