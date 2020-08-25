@@ -82,11 +82,12 @@ function parse(code, file, delay, input, unlimited) {
         if (functions[capturedNum] == "") {
           errTrace("use of undeclared function");
         }
-        for (var i = 0; i < functions[capturedNum].length && !halt; i += 2) {
+        let abort = undefined
+        for (var i = 0; i < functions[capturedNum].length && !halt && !abort; i += 2) {
           let val = functions[capturedNum].substr(i, 2);
           num = Number(val.slice(0, 1));
           let instruction = val.slice(1, 2);
-          instructions[instruction]();
+          abort = instructions[instruction]();
         }
       } else if (opcode == 1) {
         func = true;
@@ -143,7 +144,7 @@ function parse(code, file, delay, input, unlimited) {
       chkCnum();
       opcode = 0;
       if (register < cnum) {
-        conditional();
+        return conditional();
       }
     },
     "e": () => {
@@ -154,7 +155,7 @@ function parse(code, file, delay, input, unlimited) {
       chkCnum();
       opcode = 0;
       if (register == cnum) {
-        conditional();
+        return conditional();
       }
     },
     "g": () => {
@@ -165,7 +166,7 @@ function parse(code, file, delay, input, unlimited) {
       chkCnum();
       opcode = 0;
       if (register > cnum) {
-        conditional();
+        return conditional();
       }
     },
 
@@ -249,6 +250,7 @@ function parse(code, file, delay, input, unlimited) {
     num = jnum;
     instructions["f"]();
     cnum = -999; // reset cnum
+    return true // abort current function
   }
 
   function sleep(ms) {
