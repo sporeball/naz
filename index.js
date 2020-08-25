@@ -92,7 +92,8 @@ function parse(code, file, delay, input, unlimited) {
       }
     },
     "h": () => {
-      warn("program halted.");
+      spinner.stop();
+      warn("program halted");
       trace();
       halt = true;
     },
@@ -279,7 +280,7 @@ function parse(code, file, delay, input, unlimited) {
 
     spinner.stop();
 
-    log(chalk.green("finished") + chalk.cyan(` in ${time}`))
+    if (!halt) log(chalk.green("finished") + chalk.cyan(` in ${time}`));
     log(`output: ${output}`)
     return;
   }
