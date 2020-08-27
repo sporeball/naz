@@ -282,7 +282,7 @@ function parse(code, file, delay, input, unlimited, test) {
     spinner.stop();
 
     if (!halt && !test) log(chalk.green("finished") + chalk.cyan(` in ${time}`));
-    log(`output: ${output}`)
+    if (!test) log(`output: ${output}`)
 
     if (test) fs.writeFileSync("output.txt", output, {encoding: "utf-8"}, function(){});
     return;
