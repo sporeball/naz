@@ -30,7 +30,7 @@ var fnum = 0; // number to be used when executing the f command
 var vnum = 0; // number to be used when executing the v command
 
 var jnum = 0; // number of the function to execute conditionally
-var cnum = -999; // number to check against
+var cnum = undefined; // number to check against
 
 var i = 0; // the step the interpreter is on
 var line = col = 1;
@@ -120,7 +120,7 @@ function parse(code, file, delay, input, unlimited, test) {
     "v": () => {
       vnum = num;
       if (opcode == 0) {
-        if (variables[vnum] == -999) {
+        if (variables[vnum] === undefined) {
           errTrace("use of undeclared variable");
         }
         register = variables[vnum];
@@ -128,7 +128,7 @@ function parse(code, file, delay, input, unlimited, test) {
         variables[vnum] = register;
         opcode = 0;
       } else if (opcode == 3) {
-        if (variables[vnum] == -999) {
+        if (variables[vnum] === undefined) {
           errTrace("use of undeclared variable");
         }
         cnum = variables[vnum];
@@ -211,19 +211,7 @@ function parse(code, file, delay, input, unlimited, test) {
   };
 
   // all variables start undeclared
-  var variables = {
-    // we can put any arbitrary default value here as long as it's unusable
-    0: -999,
-    1: -999,
-    2: -999,
-    3: -999,
-    4: -999,
-    5: -999,
-    6: -999,
-    7: -999,
-    8: -999,
-    9: -999
-  };
+  var variables = {};
 
   function chkRegister() {
     if (u) {
@@ -237,7 +225,7 @@ function parse(code, file, delay, input, unlimited, test) {
 
   // check if we've actually set cnum
   function chkCnum() {
-    if (cnum == -999) {
+    if (cnum === undefined) {
       errTrace("number to check against must be defined");
     }
   }
@@ -247,7 +235,7 @@ function parse(code, file, delay, input, unlimited, test) {
     opcode = 0;
     num = jnum;
     instructions["f"]();
-    cnum = -999; // reset cnum
+    cnum = undefined; // reset cnum
   }
 
   function sleep(ms) {
@@ -350,10 +338,9 @@ function parse(code, file, delay, input, unlimited, test) {
 
 // utils
 reset = () => {
-  filename = input = u = undefined;
+  filename = cnum = input = u = undefined;
   opcode = register = num = fnum = vnum = jnum = i = 0;
   line = col = 1;
-  cnum = -999;
   output = "";
   halt = func = false;
   functions = {
@@ -369,16 +356,16 @@ reset = () => {
     9: ""
   };
   variables = {
-    0: -999,
-    1: -999,
-    2: -999,
-    3: -999,
-    4: -999,
-    5: -999,
-    6: -999,
-    7: -999,
-    8: -999,
-    9: -999
+    0: undefined,
+    1: undefined,
+    2: undefined,
+    3: undefined,
+    4: undefined,
+    5: undefined,
+    6: undefined,
+    7: undefined,
+    8: undefined,
+    9: undefined
   };
 }
 
