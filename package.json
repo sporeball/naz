@@ -4,7 +4,7 @@
   "description": "a JavaScript-based esolang where every command is named by a number and a letter",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --reporter=decaf"
   },
   "repository": {
     "type": "git",
@@ -28,6 +28,7 @@
     "pretty-ms": "^5.1.0"
   },
   "devDependencies": {
+    "log-symbols": "^4.0.0",
     "mocha": "^8.1.2",
     "p-wait-for": "^3.1.0",
     "path-exists": "^4.0.0"

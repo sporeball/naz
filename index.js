@@ -20,7 +20,9 @@ spinner.spinner = {
   "frames": ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
 }
 
+var code;
 var filename;
+var delay;
 
 var opcode = 0;
 var register = 0;
@@ -38,302 +40,311 @@ var line = col = 1;
 var input;
 var output = "";
 
+var error;
+
 var u;
 
 var halt = false; // whether to halt the interpreter
 var func = false; // are we in the middle of declaring a function?
+var test = false; // are we running a test right now?
 
-function parse(code, file, delay, input, unlimited, test) {
-  filename = file;
-  input = input;
-  u = unlimited;
-
-  var instructions = {
-    // arithmetic instructions
-    "a": () => {
-      register += num;
-      chkRegister();
-    },
-    "d": () => {
-      if (num == 0) {
-        errTrace("division by zero");
-      }
-      register = Math.floor(register / num);
-    },
-    "m": () => {
-      register *= num;
-      chkRegister();
-    },
-    "s": () => {
-      register -= num;
-      chkRegister();
-    },
-    "p": () => {
-      if (num == 0) {
-        errTrace("division by zero");
-      }
-      register = register % num;
-    },
-
-    // program flow instructions
-    "f": () => {
-      fnum = num;
-      if (opcode == 0 || opcode == 3) {
-        if (functions[fnum] == "") {
-          errTrace("use of undeclared function");
-        }
-        for (var i = 0; i <= functions[fnum].length; i += 2) {
-          let val = functions[fnum].substr(i, 2);
-          num = Number(val.slice(0, 1));
-          let instruction = val.slice(1, 2);
-          instructions[instruction]();
-        }
-      } else if (opcode == 1) {
-        func = true;
-      }
-    },
-    "h": () => {
-      spinner.stop();
-      warn("program halted");
-      trace();
-      halt = true;
-    },
-    "o": () => {
-      let val;
-      if (register > -1 && register < 10) {
-        val = register.toString();
-      } else if (register == 10) {
-        val = "\n";
-      } else if (register > 31 && register < 127) {
-        val = String.fromCharCode(register);
-      } else {
-        if (u) {
-          val = String.fromCharCode(register);
-        }
-        else {
-          errTrace("invalid output value");
-        }
-      }
-
-      output += val.repeat(num);
-    },
-    "v": () => {
-      vnum = num;
-      if (opcode == 0) {
-        if (variables[vnum] === undefined) {
-          errTrace("use of undeclared variable");
-        }
-        register = variables[vnum];
-      } else if (opcode == 2) {
-        variables[vnum] = register;
-        opcode = 0;
-      } else if (opcode == 3) {
-        if (variables[vnum] === undefined) {
-          errTrace("use of undeclared variable");
-        }
-        cnum = variables[vnum];
-      }
-    },
-
-    // conditional instructions
-    "l": () => {
-      if (opcode != 3) {
-        errTrace("conditionals must run in opcode 3");
-      }
-      jnum = num;
-      chkCnum();
-      if (register < cnum) {
-        conditional();
-      }
-    },
-    "e": () => {
-      if (opcode != 3) {
-        errTrace("conditionals must run in opcode 3");
-      }
-      jnum = num;
-      chkCnum();
-      if (register == cnum) {
-        conditional();
-      }
-    },
-    "g": () => {
-      if (opcode != 3) {
-        errTrace("conditionals must run in opcode 3");
-      }
-      jnum = num;
-      chkCnum();
-      if (register > cnum) {
-        conditional();
-      }
-    },
-
-    // special instructions
-    "n": () => {
-      if (variables[num] == -999) {
-        errTrace("use of undeclared variable")
-      }
-      variables[num] = -(variables[num]);
-    },
-    "r": () => {
-      if (input == "") {
-        errTrace("no input provided");
-      }
-
-      let val = input.charCodeAt(-1 + num);
-      if (Number.isNaN(val)) {
-        errTrace("input string not long enough")
-      }
-
-      register = val;
-      input = input.replace(input.slice(num - 1, num), "");
-    },
-    "x": () => {
-      if (num > 3) {
-        errTrace("invalid opcode");
-      }
-
-      opcode = num;
+var instructions = {
+  // arithmetic instructions
+  "a": () => {
+    register += num;
+    chkRegister();
+  },
+  "d": () => {
+    if (num == 0) {
+      throw new Error("division by zero");
     }
-  }
-
-  // all functions start undeclared
-  var functions = {
-    0: "",
-    1: "",
-    2: "",
-    3: "",
-    4: "",
-    5: "",
-    6: "",
-    7: "",
-    8: "",
-    9: ""
-  };
-
-  // all variables start undeclared
-  var variables = {};
-
-  function chkRegister() {
-    if (u) {
+    register = Math.floor(register / num);
+  },
+  "m": () => {
+    register *= num;
+    chkRegister();
+  },
+  "s": () => {
+    register -= num;
+    chkRegister();
+  },
+  "p": () => {
+    if (num == 0) {
+      throw new Error("division by zero");
     }
-    else {
-      if (register < -127 || register > 127) {
-        errTrace("register value out of bounds");
+    register = register % num;
+  },
+
+  // program flow instructions
+  "f": () => {
+    fnum = num;
+    if (opcode == 0 || opcode == 3) {
+      if (functions[fnum] == "") {
+        throw new Error("use of undeclared function");
       }
-    }
-  }
-
-  // check if we've actually set cnum
-  function chkCnum() {
-    if (cnum === undefined) {
-      errTrace("number to check against must be defined");
-    }
-  }
-
-  // execute a correctly formatted conditional instruction
-  function conditional() {
-    opcode = 0;
-    num = jnum;
-    instructions["f"]();
-    cnum = undefined; // reset cnum
-  }
-
-  function sleep(ms) {
-    return new Promise(resolve => {
-      setTimeout(resolve, ms);
-    });
-  }
-
-  // main function
-  async function main() {
-    spinner.start();
-    perf.start();
-
-    while (i < code.length) {
-      try {
-        step(i);
-      } catch (e) {
-        if (e instanceof RangeError) {
-          errTrace("too much recursion");
-        }
+      for (var i = 0; i < functions[fnum].length; i += 2) {
+        let val = functions[fnum].substr(i, 2);
+        num = Number(val.slice(0, 1));
+        let instruction = val.slice(1, 2);
+        instructions[instruction]();
       }
-
-      if (halt) break;
-      await sleep(delay);
-      i++;
+    } else if (opcode == 1) {
+      func = true;
     }
-
-    // stop
-    const results = perf.stop();
-    const time = ms(Number(results.time.toFixed(0)));
-
+  },
+  "h": () => {
     spinner.stop();
-
-    if (!halt && !test) log(chalk.green("finished") + chalk.cyan(` in ${time}`));
+    warn("program halted");
+    info(`  at ${filename}:${line}:${col}`);
     if (!test) log(`output: ${output}`)
+    halt = true;
+  },
+  "o": () => {
+    let val;
+    if (register > -1 && register < 10) {
+      val = register.toString();
+    } else if (register == 10) {
+      val = "\n";
+    } else if (register > 31 && register < 127) {
+      val = String.fromCharCode(register);
+    } else {
+      if (u) {
+        val = String.fromCharCode(register);
+      }
+      else {
+        throw new Error("invalid output value");
+      }
+    }
 
-    if (test) fs.writeFileSync("output.txt", output, {encoding: "utf-8"}, function(){});
+    output += val.repeat(num);
+  },
+  "v": () => {
+    vnum = num;
+    if (opcode == 0) {
+      if (variables[vnum] === undefined) {
+        throw new Error("use of undeclared variable");
+      }
+      register = variables[vnum];
+    } else if (opcode == 2) {
+      variables[vnum] = register;
+      opcode = 0;
+    } else if (opcode == 3) {
+      if (variables[vnum] === undefined) {
+        throw new Error("use of undeclared variable");
+      }
+      cnum = variables[vnum];
+    }
+  },
+
+  // conditional instructions
+  "l": () => {
+    if (opcode != 3) {
+      throw new Error("conditionals must run in opcode 3");
+    }
+    jnum = num;
+    chkCnum();
+    if (register < cnum) {
+      conditional();
+    }
+  },
+  "e": () => {
+    if (opcode != 3) {
+      throw new Error("conditionals must run in opcode 3");
+    }
+    jnum = num;
+    chkCnum();
+    if (register == cnum) {
+      conditional();
+    }
+  },
+  "g": () => {
+    if (opcode != 3) {
+      throw new Error("conditionals must run in opcode 3");
+    }
+    jnum = num;
+    chkCnum();
+    if (register > cnum) {
+      conditional();
+    }
+  },
+
+  // special instructions
+  "n": () => {
+    if (variables[num] == -999) {
+      throw new Error("use of undeclared variable")
+    }
+    variables[num] = -(variables[num]);
+  },
+  "r": () => {
+    if (input == "") {
+      throw new Error("no input provided");
+    }
+
+    let val = input.charCodeAt(-1 + num);
+    if (Number.isNaN(val)) {
+      throw new Error("input string not long enough")
+    }
+
+    register = val;
+    input = input.replace(input.slice(num - 1, num), "");
+  },
+  "x": () => {
+    if (num > 3) {
+      throw new Error("invalid opcode");
+    }
+
+    opcode = num;
+  }
+};
+
+// all functions start undeclared
+var functions = {
+  0: "",
+  1: "",
+  2: "",
+  3: "",
+  4: "",
+  5: "",
+  6: "",
+  7: "",
+  8: "",
+  9: ""
+};
+
+// all variables start undeclared
+var variables = {};
+
+function chkRegister() {
+  if (u) {
+  }
+  else {
+    if (register < -127 || register > 127) {
+      throw new Error("register value out of bounds");
+    }
+  }
+}
+
+// check if we've actually set cnum
+function chkCnum() {
+  if (cnum === undefined) {
+    throw new Error("number to check against must be defined");
+  }
+}
+
+// execute a correctly formatted conditional instruction
+function conditional() {
+  opcode = 0;
+  num = jnum;
+  instructions["f"]();
+  cnum = undefined; // reset cnum
+}
+
+function step(n) {
+  // newline
+  if (code[n] == "\r\n") {
+    func = false;
+
+    line++;
+    col = 1;
+
+    if (opcode == 1) { opcode = 0; }
+
     return;
   }
-  main();
 
-  function step(n) {
-    // newline
-    if (code[n] == "\r\n") {
-      func = false;
-
-      line++;
-      col = 1;
-
-      if (opcode == 1) { opcode = 0; }
-
-      return;
-    }
-
-    if (code[n] == "0x") {
-      func = false;
-    }
-
-    if (isNaN(code[n].slice(0, 1))) {
-      if (!(code[n].slice(0, 1) in instructions)) {
-        errTrace("invalid instruction");
-      }
-      errTrace("missing number literal");
-    } else {
-      if (code[n].slice(1, 2) == "\r") {
-        errTrace("number literal missing an instruction");
-      }
-    }
-
-    if (!isNaN(code[n].slice(1, 2))) {
-      errTrace("attempt to chain number literals");
-    }
-
-    // the instruction is formatted correctly, so we continue
-
-    num = Number(code[n].slice(0, 1));
-    col++;
-
-    var instruction = code[n].slice(1, 2);
-    if (!(instruction in instructions)) {
-      errTrace("invalid instruction");
-    }
-
-    if (opcode == 2 && code[n].slice(1, 2) != "v") {
-      errTrace("improper use of opcode 2");
-    }
-
-    if (func) { // are we in the middle of declaring a function?
-      // add the parsed command to the function we're declaring
-      functions[fnum] += code[n];
-      return;
-    }
-
-    // everything's correct, run the instruction
-    instructions[instruction]();
-
-    col++;
+  if (code[n] == "0x") {
+    func = false;
   }
+
+  if (isNaN(code[n].slice(0, 1))) {
+    if (!(code[n].slice(0, 1) in instructions)) {
+      throw new Error("invalid instruction");
+    }
+    throw new Error("missing number literal");
+  } else {
+    if (code[n].slice(1, 2) == "\r") {
+      throw new Error("number literal missing an instruction");
+    }
+  }
+
+  if (!isNaN(code[n].slice(1, 2))) {
+    throw new Error("attempt to chain number literals");
+  }
+
+  // the instruction is formatted correctly, so we continue
+
+  num = Number(code[n].slice(0, 1));
+  col++;
+
+  var instruction = code[n].slice(1, 2);
+  if (!(instruction in instructions)) {
+    throw new Error("invalid instruction");
+  }
+
+  if (opcode == 2 && code[n].slice(1, 2) != "v") {
+    throw new Error("improper use of opcode 2");
+  }
+
+  if (func) { // are we in the middle of declaring a function?
+    // add the parsed command to the function we're declaring
+    functions[fnum] += code[n];
+    return;
+  }
+
+  // everything's correct, run the instruction
+  instructions[instruction]();
+
+  col++;
+}
+
+async function parse(c, file, d, inp, unlimited, t) {
+  code = c;
+  filename = file;
+  delay = d;
+  input = inp;
+  u = unlimited;
+  test = t;
+
+  spinner.start();
+  perf.start();
+
+  while (i < code.length) {
+    try {
+      step(i);
+    } catch (e) {
+      if (e instanceof RangeError) {
+        error = new Error("too much recursion");
+      } else {
+        error = e;
+      }
+      spinner.stop();
+      perf.stop();
+      if (!test) {
+        log(chalk.red("error: ") + error.message);
+        info(`  at ${filename}:${line}:${col}`);
+      }
+      return `${chalk.red("error:")} ${error.message}\n${chalk.cyan(`      at ${line}:${col}`)}`;
+    }
+
+    await sleep(delay);
+    i++;
+  }
+
+  // stop
+  const results = perf.stop();
+  const time = ms(Number(results.time.toFixed(0)));
+
+  spinner.stop();
+
+  if (halt) {
+    return error;
+  }
+
+  if (!halt && !test) log(chalk.green("finished") + chalk.cyan(` in ${time}`));
+  if (!test) log(`output: ${output}`)
+
+  if (test) fs.writeFileSync("output.txt", output, {encoding: "utf-8"}, function(){});
+  return `output: ${output}`;
 }
 
 // utils
@@ -375,19 +386,22 @@ success = str => { log(chalk.green(str)) }
 warn = str => { log(chalk.yellow(str)) }
 
 err = str => {
+  error = str;
   spinner.stop();
   perf.stop();
   log(chalk.red("error: ") + str);
   halt = true;
 }
 
-errTrace = str => {
-  err(str);
-  trace();
-  process.exit(1);
-}
+// trace = () => {
+//   info(`  at ${filename}:${line}:${col}`);
+// }
 
-trace = () => { info(`  at ${filename}:${line}:${col}`); }
+function sleep(ms) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+}
 
 // exports
 exports.parse = parse;

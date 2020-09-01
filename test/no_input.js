@@ -16,19 +16,19 @@ function parse(contents, input, expected) {
       code.push(contents.substr(i, 2));
     }
 
-    Naz.parse(code, "", 1, input, false, true);
-    (async () => {
-      await pWaitFor(() => pathExists("output.txt"));
-    })();
-
-    setTimeout(function() {
-      var output = fs.readFileSync("output.txt", {encoding: "utf-8"}, function(){})
-      if (output != expected) {
-        reject(new Error(`output was ${output}, expected ${expected}`));
-      } else {
-        resolve();
-      }
-    }, 200);
+    Naz.parse(code, "", 1, input, false, true).then(function(output) {
+      setTimeout(function() {
+        if (output.indexOf(`${chalk.red("error:")}`) == 0) {
+          reject(new Error(output));
+        }
+        output = output.slice(8);
+        if (output != expected) {
+          reject(new Error(`output was ${output}, expected ${expected}`));
+        } else {
+          resolve();
+        }
+      }, 200);
+    });
   }).catch();
 }
 
@@ -51,7 +51,6 @@ describe("no_input", function() {
   });
 
   afterEach(async function() {
-    fs.unlinkSync("output.txt");
     Naz.reset();
     await sleep(100);
   });
