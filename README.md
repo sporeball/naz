@@ -23,13 +23,13 @@ you can also experiment with naz using the **beta** [web-based interpreter](http
 - `0-9` - number literal. exactly **one** of these **must** be placed before every instruction.
 - `a` - adds *n* to the register.
 - `d` - divides the register by *n*, rounding down.
-- `e` - conditional equal to. executes a function if the value in the register is *equal to* the value of variable *n*.
+- `e` - conditional equal to. goto function *n* if the value in the register is *equal to* the value of a specific variable.
 - `f` - function command:
   - opcode 0 - *executes* function *n*.
   - opcode 1 - *declares* function *n*.
-- `g` - conditional greater than. executes a function if the value in the register is *greater than* the value of variable *n*.
+- `g` - conditional greater than. goto function *n* if the value in the register is *greater than* the value of a specific variable.
 - `h` - halts program execution. **this is meant to be used for debugging purposes only.**
-- `l` - conditional less than. executes a function if the value in the register is *less than* the value of variable *n*.
+- `l` - conditional less than. goto function *n* if the value in the register is *less than* the value of a specific variable.
 - `m` - multiplies the register by *n*.
 - `n` - negates variable *n*.
 - `o` - outputs a value determined by the value in the register:
