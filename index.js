@@ -9,7 +9,6 @@
 const chalk = require("chalk");
 const perf = require("execution-time")();
 const ms = require("pretty-ms");
-const fs = require("fs");
 
 // spinner code
 const ora = require("ora");
@@ -40,7 +39,7 @@ var line = col = 1;
 var input;
 var output = "";
 
-var error;
+var error; // the error we've thrown, if any
 
 var u;
 
@@ -170,7 +169,7 @@ var instructions = {
 
   // special instructions
   "n": () => {
-    if (variables[num] == -999) {
+    if (variables[num] === undefined) {
       throw new Error("use of undeclared variable")
     }
     variables[num] = -(variables[num]);
@@ -197,7 +196,6 @@ var instructions = {
   }
 };
 
-// all functions start undeclared
 var functions = {
   0: "",
   1: "",
@@ -211,13 +209,10 @@ var functions = {
   9: ""
 };
 
-// all variables start undeclared
 var variables = {};
 
 function chkRegister() {
-  if (u) {
-  }
-  else {
+  if (!u) {
     if (register < -127 || register > 127) {
       throw new Error("register value out of bounds");
     }
@@ -337,13 +332,12 @@ async function parse(c, file, d, inp, unlimited, t) {
   spinner.stop();
 
   if (halt) {
-    return error;
+    return;
   }
 
   if (!halt && !test) log(chalk.green("finished") + chalk.cyan(` in ${time}`));
   if (!test) log(`output: ${output}`)
 
-  if (test) fs.writeFileSync("output.txt", output, {encoding: "utf-8"}, function(){});
   return `output: ${output}`;
 }
 
@@ -366,36 +360,13 @@ reset = () => {
     8: "",
     9: ""
   };
-  variables = {
-    0: undefined,
-    1: undefined,
-    2: undefined,
-    3: undefined,
-    4: undefined,
-    5: undefined,
-    6: undefined,
-    7: undefined,
-    8: undefined,
-    9: undefined
-  };
+  variables = {};
 }
 
 log = str => { console.log(chalk.white(str)) }
 info = str => { log(chalk.cyan(str)) }
 success = str => { log(chalk.green(str)) }
 warn = str => { log(chalk.yellow(str)) }
-
-err = str => {
-  error = str;
-  spinner.stop();
-  perf.stop();
-  log(chalk.red("error: ") + str);
-  halt = true;
-}
-
-// trace = () => {
-//   info(`  at ${filename}:${line}:${col}`);
-// }
 
 function sleep(ms) {
   return new Promise(resolve => {
@@ -408,4 +379,3 @@ exports.parse = parse;
 exports.reset = reset;
 exports.log = log;
 exports.warn = warn;
-exports.err = err;
