@@ -23,7 +23,7 @@ function parse(contents, input, expected) {
         }
         output = output.slice(8);
         if (output != expected) {
-          reject(new Error(`output was ${output}, expected ${expected}`));
+          reject(new Error(`${chalk.red("error:")} output was ${output}, expected ${expected}`));
         } else {
           resolve();
         }
