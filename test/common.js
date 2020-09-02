@@ -1,11 +1,15 @@
 const Naz = require("../index.js");
+const fs = require("fs");
+const path = require("path");
+const eol = require("eol");
 const chalk = require("chalk");
 
 var code = [];
 
-function parse(contents, input, expected) {
+function parse(file, input, expected) {
   return new Promise(function(resolve, reject) {
     code = [];
+    let contents = eol.crlf(fs.readFileSync(path.join(__dirname, `../examples/${file}.naz`), {encoding: "utf-8"}, function(){}));
     for (var i = 0; i < contents.length; i += 2) {
       code.push(contents.substr(i, 2));
     }
