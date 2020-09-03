@@ -318,7 +318,7 @@ async function parse(c, file, d, inp, unlimited, t) {
         log(chalk.red("error: ") + error.message);
         info(`  at ${filename}:${line}:${col}`);
       }
-      return `${chalk.red("error:")} ${error.message}\n${chalk.cyan(`      at ${line}:${col}`)}`;
+      return `${chalk.red("error:")} ${error.message}\n${chalk.cyan(`at ${line}:${col}`)}`;
     }
 
     await sleep(delay);

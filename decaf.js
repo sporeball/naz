@@ -13,8 +13,12 @@ const {
 
 const chalk = require("chalk");
 const symbols = require("log-symbols");
+const draftlog = require("draftlog");
+draftlog(console);
 
 var indents = 0;
+var passing = true; // are all tests in this suite passing so far?
+var update;
 
 function Decaf(runner) {
   const stats = runner.stats;
@@ -25,13 +29,26 @@ function Decaf(runner) {
         console.log(`${indent()}${suite.title}`);
         break;
       case 2:
-        console.log(`${indent()}${chalk.yellow(suite.title)}`);
+        console.log(`${indent()}${chalk.yellow(suite.title)} ${suite.total() > 1 ? `${chalk.cyan(`(${suite.total()} cases)`)}` : ""}`);
+        if (suite.should) {
+          indents++;
+          update = console.draft(`${indent()}should ${suite.should}`);
+        }
     }
     indents++;
   });
 
-  runner.on(EVENT_SUITE_END, () => {
+  runner.on(EVENT_SUITE_END, suite => {
     indents--;
+    if (suite.should) {
+      if (passing) {
+        update(`${indent()}should ${suite.should} ${symbols.success}`)
+      } else {
+        update(`${indent()}should ${suite.should} ${symbols.error}`)
+      }
+    }
+    if (indents == 3) indents--;
+    passing = true;
   });
 
   runner.on(EVENT_TEST_PASS, test => {
@@ -40,7 +57,14 @@ function Decaf(runner) {
 
   runner.on(EVENT_TEST_FAIL, (test, err) => {
     console.log(`${indent()}${test.title} ${symbols.error}`);
-    console.log(`${indent()}${err.message}`);
+    let m = err.message.split("\n");
+    indents++;
+    console.log(`${indent()}${m[0]}`);
+    if (m[1]) {
+      console.log(`${indent()}${m[1]}`);
+    }
+    indents--;
+    passing = false;
   });
 
   runner.once(EVENT_RUN_END, () => {
