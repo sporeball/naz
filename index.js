@@ -78,14 +78,16 @@ var instructions = {
   "f": () => {
     fnum = num;
     if (opcode == 0 || opcode == 3) {
-      if (functions[fnum] == "") {
-        throw new Error("use of undeclared function");
+      let capturedNum = num
+      if (functions[capturedNum] == "") {
+        errTrace("use of undeclared function");
       }
-      for (var i = 0; i < functions[fnum].length; i += 2) {
-        let val = functions[fnum].substr(i, 2);
+      let abort = undefined
+      for (var i = 0; i < functions[capturedNum].length && !halt && !abort; i += 2) {
+        let val = functions[capturedNum].substr(i, 2);
         num = Number(val.slice(0, 1));
         let instruction = val.slice(1, 2);
-        instructions[instruction]();
+        abort = instructions[instruction]();
       }
     } else if (opcode == 1) {
       func = true;
@@ -142,8 +144,9 @@ var instructions = {
     }
     jnum = num;
     chkCnum();
+    opcode = 0;
     if (register < cnum) {
-      conditional();
+      return conditional();
     }
   },
   "e": () => {
@@ -152,8 +155,9 @@ var instructions = {
     }
     jnum = num;
     chkCnum();
+    opcode = 0;
     if (register == cnum) {
-      conditional();
+      return conditional();
     }
   },
   "g": () => {
@@ -162,8 +166,9 @@ var instructions = {
     }
     jnum = num;
     chkCnum();
+    opcode = 0;
     if (register > cnum) {
-      conditional();
+      return conditional();
     }
   },
 
@@ -232,6 +237,7 @@ function conditional() {
   num = jnum;
   instructions["f"]();
   cnum = undefined; // reset cnum
+  return true; // abort current function
 }
 
 function step(n) {
