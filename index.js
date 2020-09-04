@@ -1,7 +1,8 @@
 /*
   index.js
   naz interpreter
-  copyright (c) 2020 sporeball
+  copyright (c) 2020 sporeball & contributors:
+    - tobiasheineken
   MIT license
 */
 
