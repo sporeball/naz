@@ -17,7 +17,7 @@ describe("input", function() {
       });
     });
   });
-  describe("compactify", function() {
+  describe("cg/compactify", function() {
     this.should = "remove all vowels after the first character";
     tests = [
       {input: "i\u0002", expected: "i"},
@@ -27,6 +27,54 @@ describe("input", function() {
     tests.forEach(function(test) {
       it(`${test.input} ${chalk.gray("->")} ${test.expected}`, async function() {
         await Common.parse("cg/compactify", test.input, test.expected);
+      });
+    });
+  });
+  describe("cg/doublespeak", function() {
+    this.should = "output each character twice";
+    tests = [
+      {input: "Double speak!\u0002", expected: "DDoouubbllee  ssppeeaakk!!"},
+    ];
+    tests.forEach(function(test) {
+      it(`${test.input} ${chalk.gray("->")} ${test.expected}`, async function() {
+        await Common.parse("cg/doublespeak", test.input, test.expected);
+      });
+    });
+  });
+  describe("cg/fullwidth", function() {
+    this.should = "output each character with a space after it";
+    tests = [
+      {input: "Full width text\u0002", expected: "F u l l   w i d t h   t e x t "},
+    ];
+    tests.forEach(function(test) {
+      it(`${test.input} ${chalk.gray("->")} ${test.expected}`, async function() {
+        await Common.parse("cg/fullwidth", test.input, test.expected);
+      });
+    });
+  });
+  describe("cg/howhappy", function() {
+    this.should = "output the happiness of the input emoticon";
+    tests = [
+      {input: ":(", expected: "0"},
+      {input: ":-|", expected: "1"},
+      {input: ":)", expected: "2"},
+      {input: ":-D", expected: "3"}
+    ];
+    tests.forEach(function(test) {
+      it(`${test.input} ${chalk.gray("->")} ${test.expected}`, async function() {
+        await Common.parse("cg/howhappy", test.input, test.expected);
+      });
+    });
+  });
+  describe("cg/lowercase", function() {
+    this.should = "convert the input string to lowercase";
+    tests = [
+      {input: "HELLO, WORLD\u0002", expected: "hello, world"},
+      {input: "!!!\u0002", expected: "!!!"}
+    ];
+    tests.forEach(function(test) {
+      it(`${test.input} ${chalk.gray("->")} ${test.expected}`, async function() {
+        await Common.parse("cg/lowercase", test.input, test.expected);
       });
     });
   });
