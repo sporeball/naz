@@ -75,6 +75,8 @@ naz is at least as powerful as a finite state automaton, because it can implemen
 ### thanks
 the naz interpreter and runner are heavily based on those of the fantastic [\\/\\/>](https://github.com/torcado194/worm), by [torcado](https://github.com/torcado194). <3
 
+the example program [prime.naz](https://github.com/sporeball/naz/blob/master/examples/prime.naz) was designed by [tobiasheineken](https://github.com/tobiasheineken).
+
 ### donate
 you can support the development of this project and others via Patreon:
 

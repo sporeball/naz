@@ -17,6 +17,20 @@ describe("input", function() {
       });
     });
   });
+  describe("prime", function() {
+    this.should = "test if a number is prime";
+    tests = [
+      {input: "007", expected: "1"},
+      {input: "035", expected: "0"},
+      {input: "227", expected: "1"},
+      {input: "001", expected: "0"},
+    ];
+    tests.forEach(function(test) {
+      it(`${test.input} ${chalk.gray("->")} ${test.expected}`, async function() {
+        await Common.parse("prime", test.input, test.expected);
+      });
+    });
+  });
   describe("cg/compactify", function() {
     this.should = "remove all vowels after the first character";
     tests = [
