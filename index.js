@@ -81,7 +81,7 @@ var instructions = {
     if (opcode == 0 || opcode == 3) {
       let capturedNum = num
       if (functions[capturedNum] == "") {
-        errTrace("use of undeclared function");
+        throw new Error("use of undeclared function");
       }
       let abort = undefined
       for (var i = 0; i < functions[capturedNum].length && !halt && !abort; i += 2) {
