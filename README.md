@@ -51,7 +51,7 @@ you can also experiment with naz using the **beta** [web-based interpreter](http
 - `3` - conditional opcode. the interpreter **must** parse a call to the `v` command, followed by a call to a conditional instruction (`l`, `e` or `g`). afterwards, the interpreter will return to opcode 0.
 
 ### command line flags
-- `-u` / `--unlimited` - whether to remove the default limits on integer values (default: false)
+- `-u` / `--unlimited` - if present, the default limits on integer values will be removed
 - `-d` / `--delay` - sets the delay between execution steps (default: 1ms) (optional)
 - `-i` / `--input` - sets the string to use as input, to be read by the `r` command (default: none) (optional)
 - `-f` / `--file` - sets the file whose contents will be read by the `r` command. this takes precedence over the `-i` flag (default: none) (optional)
@@ -73,7 +73,7 @@ for more complicated examples, check the [examples folder](https://github.com/sp
 if you're making some changes and need to make sure everything's still working correctly, you can run tests on some of the example programs like so:
 
 ```
-npm test
+$ npm test
 ```
 
 ### computational class
