@@ -46,8 +46,8 @@ you can also experiment with naz using the **beta** [web-based interpreter](http
 
 ### opcodes
 - `0` - normal operation. commands will execute one at a time, in order.
-- `1` - function write. commands will become part of the function referenced through use of the `f` command until a newline is parsed.
-- `2` - variable write. only the `v` command will be accepted, after which the interpreter will return to opcode 0.
+- `1` - function write. the interpreter **must** parse a call to the `f` command first; commands will then be added onto the end of the referenced function until a newline is parsed or the opcode is explicitly set to 0.
+- `2` - variable write. the interpreter **must** parse a call to the `v` command; after this is executed, the interpreter will return to opcode 0.
 - `3` - conditional opcode. the interpreter **must** parse a call to the `v` command, followed by a call to a conditional instruction (`l`, `e` or `g`). afterwards, the interpreter will return to opcode 0.
 
 ### command line flags

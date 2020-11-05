@@ -254,10 +254,6 @@ function step(n) {
     return;
   }
 
-  if (code[n] == "0x") {
-    func = false;
-  }
-
   if (isNaN(code[n].slice(0, 1))) {
     if (!(code[n].slice(0, 1) in instructions)) {
       throw new Error("invalid instruction");
@@ -281,6 +277,17 @@ function step(n) {
   var instruction = code[n].slice(1, 2);
   if (!(instruction in instructions)) {
     throw new Error("invalid instruction");
+  }
+
+  // we handle this as soon as possible to avoid issues
+  if (code[n] == "0x") {
+    func = false;
+    opcode = 0;
+    return;
+  }
+
+  if (opcode == 1 && func == false && code[n].slice(1, 2) != "f") {
+    throw new Error("improper use of opcode 1");
   }
 
   if (opcode == 2 && code[n].slice(1, 2) != "v") {
