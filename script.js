@@ -1,3 +1,10 @@
+/*
+  port of the original naz interpreter to web
+  copyright (c) 2020 sporeball & contributors:
+    - tobiasheineken
+  MIT license
+*/
+
 var editor = ace.edit("editor");
 var session = editor.getSession();
 
