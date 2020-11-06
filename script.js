@@ -37,6 +37,7 @@ var aceCode; // the code inside the ace editor
 var elRun = document.getElementById("run");
 var elResult = document.getElementById("result");
 var elInput = document.getElementById("input");
+var elNullByte = document.getElementById("nullByte");
 
 var instructions = {
   // arithmetic instructions
@@ -377,7 +378,10 @@ function exec() {
     code.push(data.substr(i, 2));
   }
 
-  parse(code, elInput.value).then(function(result) {
+  let inp = elInput.value;
+  if (elNullByte.checked) inp += "\u0000";
+
+  parse(code, inp).then(function(result) {
     elResult.innerHTML = result;
   });
 }

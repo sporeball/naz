@@ -14,9 +14,17 @@ h1, h2 {
   font-family:"Abel"
 }
 
-p.small {
+div label, [type="checkbox"] {
+  vertical-align:middle
+}
+
+.small {
   margin-top:0.5rem;
   margin-bottom:0.5rem
+}
+
+.form-check {
+  padding-left:0
 }
 
 #editor, #result {
