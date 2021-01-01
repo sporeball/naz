@@ -1,7 +1,7 @@
 /*
   naz.js
   interface to naz interpreter
-  copyright (c) 2020 sporeball
+  copyright (c) 2021 sporeball
   MIT license
 */
 
