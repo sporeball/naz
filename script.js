@@ -1,6 +1,6 @@
 /*
   port of the original naz interpreter to web
-  copyright (c) 2020 sporeball & contributors:
+  copyright (c) 2021 sporeball & contributors:
     - tobiasheineken
   MIT license
 */
