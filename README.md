@@ -1,5 +1,5 @@
 # naz
-**naz** is a JavaScript-based esolang where every command is named by a number and a letter.
+**naz** is a JavaScript-based esolang where every instruction is named by a number and a letter.
 
 ### usage
 
@@ -19,17 +19,17 @@ $ node naz.js filename.naz
 #### online
 you can also experiment with naz using the **beta** [web-based interpreter](https://sporeball.dev/naz)! this is a lot more unstable compared to the original Node-based implementation, but should work if you're in a hurry!
 
-### command reference
+### instruction reference
 - `0-9` - number literal. exactly **one** of these **must** be placed before every instruction.
 - `a` - adds *n* to the register.
 - `d` - divides the register by *n*, rounding down.
-- `e` - conditional equal to. goto function *n* if the value in the register is *equal to* the value of a specific variable.
-- `f` - function command:
-  - opcode 0 - *executes* function *n*.
+- `e` - conditional equal to. goto function *n* if the value in the register is *equal to* the value of the variable referenced before this instruction.
+- `f` - function instruction:
+  - opcode 0 - *calls* function *n*.
   - opcode 1 - *declares* function *n*.
-- `g` - conditional greater than. goto function *n* if the value in the register is *greater than* the value of a specific variable.
+- `g` - conditional greater than. goto function *n* if the value in the register is *greater than* the value of the variable referenced before this instruction.
 - `h` - halts program execution. **this is meant to be used for debugging purposes only.**
-- `l` - conditional less than. goto function *n* if the value in the register is *less than* the value of a specific variable.
+- `l` - conditional less than. goto function *n* if the value in the register is *less than* the value of the variable referenced before this instruction.
 - `m` - multiplies the register by *n*.
 - `n` - negates variable *n*.
 - `o` - outputs a value determined by the value in the register:
@@ -37,27 +37,28 @@ you can also experiment with naz using the **beta** [web-based interpreter](http
   - 10 - outputs a newline.
   - 32-126 - outputs an ASCII value.
 - `p` - divides the register by *n*, then sets the register equal to the remainder.
-- `r` - sets the register equal to the ASCII value of the *n*-th character of the input string, then removes that character from the input.
+- `r` - sets the register equal to the ASCII value of the *n*-th character of the input string, then removes that character from the input string.
 - `s` - subtracts *n* from the register.
-- `v` - variable command:
+- `v` - variable instruction:
   - opcode 0 - sets the register equal to the value of variable *n*.
   - opcode 2 - sets variable *n* equal to the value in the register.
+  - opcode 3 - variable *n* will be considered when executing the conditional instruction that follows.
 - `x` - sets the current opcode to *n*.
 
 ### opcodes
-- `0` - normal operation. commands will execute one at a time, in order.
-- `1` - function write. the interpreter **must** parse a call to the `f` command first; commands will then be added onto the end of the referenced function until a newline is parsed or the opcode is explicitly set to 0.
-- `2` - variable write. the interpreter **must** parse a call to the `v` command; after this is executed, the interpreter will return to opcode 0.
-- `3` - conditional opcode. the interpreter **must** parse a call to the `v` command, followed by a call to a conditional instruction (`l`, `e` or `g`). afterwards, the interpreter will return to opcode 0.
+- `0` - normal operation. instructions will execute one at a time, in order.
+- `1` - function write. the interpreter **must** parse a call to the `f` instruction first; instructions will then be added onto the end of the referenced function until a newline is parsed or the opcode is explicitly set to 0.
+- `2` - variable write. the interpreter **must** parse a call to the `v` instruction; after this is executed, the interpreter will return to opcode 0.
+- `3` - conditional opcode. the interpreter **must** parse a call to the `v` instruction, followed by a call to a conditional instruction (`l`, `e` or `g`). afterwards, the interpreter will return to opcode 0.
 
-### command line flags
+### instruction line flags
 - `-u` / `--unlimited` - if present, the default limits on integer values will be removed
 - `-d` / `--delay` - sets the delay between execution steps (default: 1ms) (optional)
-- `-i` / `--input` - sets the string to use as input, to be read by the `r` command (default: none) (optional)
-- `-f` / `--file` - sets the file whose contents will be read by the `r` command. this takes precedence over the `-i` flag (default: none) (optional)
+- `-i` / `--input` - sets the string to use as input, to be read by the `r` instruction (default: none) (optional)
+- `-f` / `--file` - sets the file whose contents will be read by the `r` instruction. this takes precedence over the `-i` flag (default: none) (optional)
 
 #### notes
-- by default, the value in the register must always be between -127 and 127 inclusive, or program execution will **immediately halt**. this behavior can be disabled with the `-u` flag.
+- by default, the value in the register must always be between -127 and 127 (both inclusive), or program execution will **immediately halt**. this behavior can be disabled with the `-u` flag.
 - conditional instructions can only be run in opcode 3.
 
 ### example
