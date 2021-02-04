@@ -28,8 +28,8 @@ var opcode = 0;
 var register = 0;
 
 var num = 0; // number to be used for the next instruction
-var fnum = 0; // number to be used when executing the f command
-var vnum = 0; // number to be used when executing the v command
+var fnum = 0; // number to be used when executing the f instruction
+var vnum = 0; // number to be used when executing the v instruction
 
 var jnum = 0; // number of the function to execute conditionally
 var cnum = undefined; // number to check against
@@ -295,7 +295,7 @@ function step(n) {
   }
 
   if (func) { // are we in the middle of declaring a function?
-    // add the parsed command to the function we're declaring
+    // add the parsed instruction to the function we're declaring
     functions[fnum] += code[n];
     return;
   }
