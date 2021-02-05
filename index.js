@@ -254,6 +254,11 @@ function step(n) {
     return;
   }
 
+  // special case first
+  if (code[n].slice(0, 1) == "#") {
+    throw new Error("a space is required before comments at the end of a line");
+  }
+
   if (isNaN(code[n].slice(0, 1))) {
     if (!(code[n].slice(0, 1) in instructions)) {
       throw new Error("invalid instruction");
