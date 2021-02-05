@@ -32,7 +32,7 @@ function Decaf(runner) {
         console.log(`${indent()}${chalk.yellow(suite.title)} ${suite.total() > 1 ? `${chalk.cyan(`(${suite.total()} cases)`)}` : ""}`);
         if (suite.should) {
           indents++;
-          update = console.draft(`${indent()}should ${suite.should}`);
+          update = console.draft(`${indent()}should ${suite.should} ${chalk.gray("...")}`);
         }
     }
     indents++;
