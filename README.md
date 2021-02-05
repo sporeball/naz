@@ -51,7 +51,7 @@ you can also experiment with naz using the **beta** [web-based interpreter](http
 - `2` - variable write. the interpreter **must** parse a call to the `v` instruction; after this is executed, the interpreter will return to opcode 0.
 - `3` - conditional opcode. the interpreter **must** parse a call to the `v` instruction, followed by a call to a conditional instruction (`l`, `e` or `g`). afterwards, the interpreter will return to opcode 0.
 
-### instruction line flags
+### command line flags
 - `-u` / `--unlimited` - if present, the default limits on integer values will be removed
 - `-d` / `--delay` - sets the delay between execution steps (default: 1ms) (optional)
 - `-i` / `--input` - sets the string to use as input, to be read by the `r` instruction (default: none) (optional)
