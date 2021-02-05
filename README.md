@@ -60,6 +60,8 @@ you can also experiment with naz using the **beta** [web-based interpreter](http
 #### notes
 - by default, the value in the register must always be between -127 and 127 (both inclusive), or program execution will **immediately halt**. this behavior can be disabled with the `-u` flag.
 - conditional instructions can only be run in opcode 3.
+- anything placed after a `#` on a line will be ignored, allowing you to comment your code. **please note** that if placed on a line that also contains commands, **at least one space** is **required** between the last command and that line's `#`.
+
 
 ### example
 the following naz program will add 9 to the register, multiply by 7, and add 2 (resulting in a value of 65), then output once, resulting in a final output of `A`:
