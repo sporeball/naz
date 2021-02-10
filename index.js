@@ -44,7 +44,6 @@ var error; // the error we've thrown, if any
 
 var u;
 
-var halt = false; // whether to halt the interpreter
 var func = false; // are we in the middle of declaring a function?
 var test = false; // are we running a test right now?
 
@@ -84,7 +83,7 @@ var instructions = {
         throw new Error("use of undeclared function");
       }
       let abort = undefined
-      for (var i = 0; i < functions[capturedNum].length && !halt && !abort; i += 2) {
+      for (var i = 0; i < functions[capturedNum].length && !abort; i += 2) {
         let val = functions[capturedNum].substr(i, 2);
         num = Number(val.slice(0, 1));
         let instruction = val.slice(1, 2);
@@ -99,7 +98,7 @@ var instructions = {
     warn("program halted");
     info(`  at ${filename}:${line}:${col}`);
     if (!test) log(`output: ${output}`)
-    halt = true;
+    process.exit(0);
   },
   "o": () => {
     let val;
@@ -350,12 +349,10 @@ async function parse(c, file, d, inp, unlimited, t) {
 
   spinner.stop();
 
-  if (halt) {
-    return;
+  if (!test) {
+    log(chalk.green("finished") + chalk.cyan(` in ${time}`));
+    log(`output: ${output}`)
   }
-
-  if (!halt && !test) log(chalk.green("finished") + chalk.cyan(` in ${time}`));
-  if (!test) log(`output: ${output}`)
 
   return `output: ${output}`;
 }
@@ -366,7 +363,7 @@ reset = () => {
   opcode = register = num = fnum = vnum = jnum = i = 0;
   line = col = 1;
   output = "";
-  halt = func = false;
+  func = false;
   functions = {
     0: "",
     1: "",
