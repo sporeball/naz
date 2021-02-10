@@ -42,6 +42,7 @@ var code = [];
 var aceCode; // the code inside the ace editor
 
 var elRun = document.getElementById("run");
+var elPermalink = document.getElementById("permalink");
 var elResult = document.getElementById("result");
 var elInput = document.getElementById("input");
 var elNullByte = document.getElementById("nullByte");
@@ -393,10 +394,16 @@ function exec() {
   });
 }
 
-exec();
-
 elRun.onclick = function() {
+  window.history.replaceState(null, null, window.location.href.split('?')[0]);
   exec();
+}
+
+elPermalink.onclick = function() {
+  let data = eol.crlf(session.getValue());
+  let inp = elInput.value;
+  let n = elNullByte.checked;
+  window.location.href = encodeURI(`${window.location.href.split('?')[0]}?code=${encodeURIComponent(data)}&input=${encodeURIComponent(inp)}&n=${n}`);
 }
 
 $("#disclaimer").click(function() {
@@ -405,4 +412,18 @@ $("#disclaimer").click(function() {
 
 $("#close_disclaimer").click(function() {
   $('#disclaimer_modal').modal('toggle');
+});
+
+window.addEventListener("DOMContentLoaded", e => {
+  let params = new URLSearchParams(window.location.search);
+  session.setValue(params.get("code") || "9a7m2a1o");
+  session.setValue(unescape(session.getValue()));
+  elInput.value = params.get("input") || "";
+  if (params.get("n") == "true") {
+    elNullByte.checked = true;
+  } else {
+    elNullByte.checked = false;
+  }
+
+  exec();
 });
