@@ -419,6 +419,7 @@ window.addEventListener("DOMContentLoaded", e => {
   session.setValue(params.get("code") || "9a7m2a1o");
   session.setValue(unescape(session.getValue()));
   elInput.value = params.get("input") || "";
+  elInput.value = unescape(elInput.value);
   if (params.get("n") == "true") {
     elNullByte.checked = true;
   } else {
