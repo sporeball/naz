@@ -1,6 +1,17 @@
 # naz
 **naz** is a JavaScript-based esolang where every instruction is named by a number and a letter.
 
+## contents
+- [usage](#usage)
+- [instruction reference](#instruction-reference)
+- [opcodes](#opcodes)
+- [command line flags](#command-line-flags)
+- [notes](#notes)
+- [example](#example)
+- [testing](#testing)
+- [computational class](#computational-class)
+- [thanks](#thanks)
+
 ### usage
 
 #### node
