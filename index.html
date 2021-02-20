@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="a JavaScript-based esolang where every command is named by a number and a letter">
+    <meta name="description" content="a JavaScript-based esolang where every instruction is named by a number and a letter">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Abel&display=swap">
     <link rel="stylesheet" href="style.css">
@@ -15,7 +15,7 @@
     <div class="jumbotron jumbotron-fluid">
       <center>
         <h1>naz</h1>
-        <p>a JavaScript-based esolang where every command is named by a number and a letter</p>
+        <p>a JavaScript-based esolang where every instruction is named by a number and a letter</p>
         <div id="tryit">
           <div id="editor">9a7m2a1o</div>
           <textarea id="result" disabled></textarea>
@@ -51,27 +51,28 @@
       </div>
     </div>
     <div class="container">
-      <h3>command reference</h3>
-      <p><kbd>0-9</kbd> - number literal. exactly <b>one</b> of these must be placed before every instruction.</p>
+      <h3>instruction reference</h3>
+      <p><kbd>0-9</kbd> - number literal. exactly <b>one</b> of these <b>must</b> be placed before every instruction.</p>
       <p><kbd>a</kbd> - adds <i>n</i> to the register.</p>
       <p><kbd>d</kbd> - divides the register by <i>n</i>, rounding down.</p>
-      <p><kbd>e</kbd> - conditional equal to. goto function <i>n</i> if the value in the register is <i>equal to</i> the value of a specific variable.</p>
-      <p><kbd>f</kbd> - function command:<ul><li>opcode 0 - <i>executes</i> function <i>n</i>.</li><li>opcode 1 - <i>declares</i> function <i>n</i>.</li></ul></p>
-      <p><kbd>g</kbd> - conditional greater than. goto function <i>n</i> if the value in the register is <i>greater than</i> the value of a specific variable.</p>
+      <p><kbd>e</kbd> - conditional equal to. goto function <i>n</i> if the value in the register is <i>equal to</i> the value of the variable referenced before this instruction.</p>
+      <p><kbd>f</kbd> - function instruction:<ul><li>opcode 0 - <i>calls</i> function <i>n</i>.</li><li>opcode 1 - <i>declares</i> function <i>n</i>.</li></ul></p>
+      <p><kbd>g</kbd> - conditional greater than. goto function <i>n</i> if the value in the register is <i>greater than</i> the value of the variable referenced before this instruction.</p>
       <p><kbd>h</kbd> - halts program execution. <b>this is meant to be used for debugging purposes only.</b></p>
-      <p><kbd>l</kbd> - conditional less than. goto function <i>n</i> if the value in the register is <i>less than</i> the value of a specific variable.</p>
+      <p><kbd>l</kbd> - conditional less than. goto function <i>n</i> if the value in the register is <i>less than</i> the value of the variable referenced before this instruction.</p>
       <p><kbd>m</kbd> - multiplies the register by <i>n</i>.</p>
       <p><kbd>n</kbd> - negates variable <i>n</i>.</p>
       <p><kbd>o</kbd> - outputs a value determined by the value in the register:<ul><li>0-9 - outputs that number.</li><li>10 - outputs a newline.</li><li>32-126 - outputs an ASCII value.</li></ul></p>
-      <p><kbd>r</kbd> - sets the register equal to the ASCII value of the <i>n</i>-th character of the input string, then removes that character from the input.</p>
+      <p><kbd>p</kbd> - divides the register by <i>n</i>, then sets the register equal to the remainder.
+      <p><kbd>r</kbd> - sets the register equal to the ASCII value of the <i>n</i>-th character of the input string, then removes that character from the input string.</p>
       <p><kbd>s</kbd> - subtracts <i>n</i> from the register.</p>
-      <p><kbd>v</kbd> - variable command:<ul><li>opcode 0 - sets the register equal to the value of variable <i>n</i>.</li><li>opcode 2 - sets variable <i>n</i> equal to the value in the register.</li></ul></p>
+      <p><kbd>v</kbd> - variable instruction:<ul><li>opcode 0 - sets the register equal to the value of variable <i>n</i>.</li><li>opcode 2 - sets variable <i>n</i> equal to the value in the register.</li><li>opcode 3 - variable <i>n</i> will be considered when executing the conditional instruction that follows.</li></ul></p>
       <p class="l"><kbd>x</kbd> - sets the current opcode to <i>n</i>.</p>
       <h3>opcodes</h3>
-      <p><kbd>0</kbd> - normal operation. commands will execute one at a time, in order.</p>
-      <p><kbd>1</kbd> - function write. the interpreter <b>must</b> parse a call to the <kbd>f</kbd> command first; commands will then be added onto the end of the referenced function until a newline is parsed or the opcode is explicitly set to 0.</p>
-      <p><kbd>2</kbd> - variable write. the interpreter <b>must</b> parse a call to the <kbd>v</kbd> command; after this is executed, the interpreter will return to opcode 0.</p>
-      <p class="l"><kbd>3</kbd> - conditional opcode. the interpreter <b>must</b> parse a call to the <kbd>v</kbd> command, followed by a call to a conditional instruction (<kbd>l</kbd>, <kbd>e</kbd> or <kbd>g</kbd>). afterwards, the interpreter will return to opcode 0.</p>
+      <p><kbd>0</kbd> - normal operation. instructions will execute one at a time, in order.</p>
+      <p><kbd>1</kbd> - function write. the interpreter <b>must</b> parse a call to the <kbd>f</kbd> instruction first; instructions will then be added onto the end of the referenced function until a newline is parsed or the opcode is explicitly set to 0.</p>
+      <p><kbd>2</kbd> - variable write. the interpreter <b>must</b> parse a call to the <kbd>v</kbd> instruction; after this is executed, the interpreter will return to opcode 0.</p>
+      <p class="l"><kbd>3</kbd> - conditional opcode. the interpreter <b>must</b> parse a call to the <kbd>v</kbd> instruction, followed by a call to a conditional instruction (<kbd>l</kbd>, <kbd>e</kbd> or <kbd>g</kbd>). afterwards, the interpreter will return to opcode 0.</p>
       <h3>notes</h3>
       <p>the value in the register must always be between -127 and 127 inclusive, or program execution will <b>immediately halt.</b></p>
       <p class="vl">conditional instructions can only be run in opcode 3.</p>
