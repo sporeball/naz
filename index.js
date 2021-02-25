@@ -180,12 +180,15 @@ var instructions = {
     variables[num] = -(variables[num]);
   },
   "r": () => {
-    if (input == "") {
+    if (input === undefined) {
       throw new Error("no input provided");
     }
 
     let val = input.charCodeAt(-1 + num);
     if (Number.isNaN(val)) {
+      if (num == 0) {
+        throw new Error("cannot read the 0th character")
+      }
       throw new Error("input string not long enough")
     }
 

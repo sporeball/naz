@@ -18,7 +18,7 @@ function naz() {
   var filename;
 
   var delay = 1;
-  var input = "";
+  var input;
 
   var unlimited = false;
 
@@ -73,7 +73,7 @@ function naz() {
     .map(x => x.indexOf(" #") > -1 ? x.slice(0, x.indexOf(" #")) : x) // partial line
     .map(x => x.trimEnd())
     .join("\r\n");
-    
+
   var code = [];
   for (var i = 0; i < contents.length; i += 2) {
     code.push(contents.substr(i, 2));
