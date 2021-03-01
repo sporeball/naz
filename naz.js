@@ -12,57 +12,46 @@ const fs = require("fs");
 const path = require("path");
 const eol = require("eol");
 
+const args = require("yeow")({
+  "program": {
+    type: "file",
+    extensions: ".naz",
+    required: true,
+    missing: "a file must be passed",
+    invalid: "not a .naz file"
+  },
+  "delay": {
+    type: "number",
+    aliases: "-d / --delay",
+    default: 1
+  },
+  "file": {
+    type: "file",
+    aliases: "-f / --file"
+  },
+  "input": {
+    type: "string",
+    aliases: "-i / --input"
+  },
+  "unlimited": { aliases: "-u / --unlimited" }
+});
+
 function naz() {
-  var args = process.argv.slice(2);
-  var file = args[0];
-  var filename;
+  var {program, delay, input, unlimited} = args;
+  var filename = program.slice(program.lastIndexOf("/") + 1);
 
-  var delay = 1;
-  var input;
-
-  var unlimited = false;
-
-  if (file === undefined) {
-    runnerErr("a file must be passed");
-  }
-
-  if (file.slice(-4) != ".naz") {
-    runnerErr("not a .naz file");
-  }
-
-  if (file.indexOf("/") > -1) {
-    filename = file.slice(file.lastIndexOf("/") + 1, file.length);
-  } else {
-    filename = file;
-  }
-
-  if (args.includes("-d") || args.includes("--delay")) {
-    let idx = args.findIndex(v => v === "-d" || v === "--delay");
-    delay = args[idx + 1];
-  }
-
-  if (args.includes("-i") || args.includes("--input")) {
-    let idx = args.findIndex(v => v === "-i" || v === "--input");
-    input = args[idx + 1];
-  }
-
-  if (args.includes("-f") || args.includes("--file")) {
-    let idx = args.findIndex(v => v === "-f" || v === "--file");
+  if (args["file"]) {
     try {
-      input = fs.readFileSync(path.join(__dirname, args[idx + 1]), {encoding: "utf-8"}, function(){});
+      input = fs.readFileSync(path.join(__dirname, args["file"]), {encoding: "utf-8"}, function(){});
     } catch (e) {
       runnerErr("input file not found");
     }
   }
 
-  if (args.includes("-u") || args.includes("--unlimited")) {
-    unlimited = true;
-  }
-
   // get file contents
   // also normalizes line endings to CRLF
   try {
-    var contents = eol.crlf(fs.readFileSync(path.join(__dirname, file), {encoding: "utf-8"}, function(){}));
+    var contents = eol.crlf(fs.readFileSync(path.join(__dirname, program), {encoding: "utf-8"}, function(){}));
   } catch (e) {
     runnerErr("file not found");
   }

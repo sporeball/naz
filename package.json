@@ -24,7 +24,8 @@
     "eol": "^0.9.1",
     "execution-time": "^1.3.0",
     "ora": "^4.0.3",
-    "pretty-ms": "^5.1.0"
+    "pretty-ms": "^5.1.0",
+    "yeow": "^0.2.0"
   },
   "devDependencies": {
     "draftlog": "^1.0.12",
