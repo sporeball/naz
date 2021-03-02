@@ -90,6 +90,9 @@ var instructions = {
         abort = instructions[instruction]();
       }
     } else if (opcode == 1) {
+      if (functions[num] != "") {
+        throw new Error("attempt to redeclare function");
+      }
       func = true;
     }
   },
