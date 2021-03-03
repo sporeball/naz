@@ -4,17 +4,16 @@ const path = require("path");
 const eol = require("eol");
 const chalk = require("chalk");
 
-var code = [];
+var contents;
 
 function parse(file, input, expected) {
   return new Promise(function(resolve, reject) {
-    code = [];
-    let contents = eol.crlf(fs.readFileSync(path.join(__dirname, `../examples/${file}.naz`), {encoding: "utf-8"}, function(){}));
-    for (var i = 0; i < contents.length; i += 2) {
-      code.push(contents.substr(i, 2));
-    }
+    contents = eol.crlf(fs.readFileSync(path.join(__dirname, `../examples/${file}.naz`), {encoding: "utf-8"}, function(){}));
 
-    Naz.parse(code, "", 1, input, false, true).then(function(output) {
+    contents = contents.split("\r\n")
+      .map(x => x.match(/^\w+ +#.*$/) ? x.slice(0, x.indexOf(" #")) : x);
+
+    Naz.parse(contents, "", 1, input, false, true).then(function(output) {
       setTimeout(function() {
         if (output.indexOf(`${chalk.red("error:")}`) == 0) {
           reject(new Error(output));

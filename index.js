@@ -20,12 +20,14 @@ spinner.spinner = {
   "frames": ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
 }
 
-var code;
+var contents;
 var filename;
 var delay;
 
 var opcode = 0;
 var register = 0;
+
+var instruction;
 
 var num = 0; // number to be used for the next instruction
 var fnum = 0; // number to be used when executing the f instruction
@@ -34,7 +36,6 @@ var vnum = 0; // number to be used when executing the v instruction
 var jnum = 0; // number of the function to execute conditionally
 var cnum = undefined; // number to check against
 
-var i = 0; // the step the interpreter is on
 var line = col = 1;
 
 var input;
@@ -246,9 +247,17 @@ function conditional() {
   return true; // abort current function
 }
 
-function step(n) {
+function step() {
+  // line that is only a comment
+  if (contents[line - 1].match(/^ *#.*$/)) {
+    line++;
+    return;
+  }
+
+  instruction = contents[line - 1].slice(col - 1, col + 1);
+
   // newline
-  if (code[n] == "\r\n") {
+  if (instruction == "" || col > contents[line - 1].length) {
     func = false;
 
     line++;
@@ -259,65 +268,69 @@ function step(n) {
     return;
   }
 
+  var number = instruction.slice(0, 1);
+  var letter = instruction.slice(1, 2);
+
   // special case first
-  if (code[n].slice(0, 1) == "#") {
+  if (number == "#") {
     throw new Error("a space is required before comments at the end of a line");
   }
 
-  if (isNaN(code[n].slice(0, 1))) {
-    if (!(code[n].slice(0, 1) in instructions)) {
+  if (isNaN(number)) {
+    if (!(number in instructions)) {
       throw new Error("invalid instruction");
     }
     throw new Error("missing number literal");
   } else {
-    if (code[n].slice(1, 2) == "\r") {
+    if (letter == "\r") {
       throw new Error("number literal missing an instruction");
     }
   }
 
-  if (!isNaN(code[n].slice(1, 2))) {
+  if (!isNaN(letter)) {
     throw new Error("attempt to chain number literals");
   }
 
   // the instruction is formatted correctly, so we continue
 
-  num = Number(code[n].slice(0, 1));
+  num = Number(number);
   col++;
 
-  var instruction = code[n].slice(1, 2);
-  if (!(instruction in instructions)) {
+  if (!(letter in instructions)) {
     throw new Error("invalid instruction");
   }
 
   // we handle this as soon as possible to avoid issues
-  if (code[n] == "0x") {
+  if (instruction == "0x") {
     func = false;
     opcode = 0;
+    col++;
     return;
   }
 
-  if (opcode == 1 && func == false && code[n].slice(1, 2) != "f") {
+  if (opcode == 1 && func == false && letter != "f") {
     throw new Error("improper use of opcode 1");
   }
 
-  if (opcode == 2 && code[n].slice(1, 2) != "v") {
+  if (opcode == 2 && letter != "v") {
     throw new Error("improper use of opcode 2");
   }
 
   if (func) { // are we in the middle of declaring a function?
     // add the parsed instruction to the function we're declaring
-    functions[fnum] += code[n];
+    functions[fnum] += instruction;
+    col++;
     return;
   }
 
   // everything's correct, run the instruction
-  instructions[instruction]();
+  instructions[letter]();
 
   col++;
 }
 
 async function parse(c, file, d, inp, unlimited, t) {
-  code = c;
+  contents = c;
   filename = file;
   delay = d;
   input = inp;
@@ -327,9 +340,9 @@ async function parse(c, file, d, inp, unlimited, t) {
   spinner.start();
   perf.start();
 
-  while (i < code.length) {
+  while (line <= contents.length) {
     try {
-      step(i);
+      step();
     } catch (e) {
       if (e instanceof RangeError) {
         error = new Error("too much recursion");
@@ -346,7 +359,6 @@ async function parse(c, file, d, inp, unlimited, t) {
     }
 
     await sleep(delay);
-    i++;
   }
 
   // stop
@@ -366,7 +378,7 @@ async function parse(c, file, d, inp, unlimited, t) {
 // utils
 reset = () => {
   filename = cnum = input = u = undefined;
-  opcode = register = num = fnum = vnum = jnum = i = 0;
+  opcode = register = num = fnum = vnum = jnum = 0;
   line = col = 1;
   output = "";
   func = false;

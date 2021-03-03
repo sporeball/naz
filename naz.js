@@ -56,19 +56,10 @@ function naz() {
     runnerErr("file not found");
   }
 
-  // filter comments from file
   contents = contents.split("\r\n")
-    .filter(x => x.charAt(0) != "#") // full line
-    .map(x => x.indexOf(" #") > -1 ? x.slice(0, x.indexOf(" #")) : x) // partial line
-    .map(x => x.trimEnd())
-    .join("\r\n");
-
-  var code = [];
-  for (var i = 0; i < contents.length; i += 2) {
-    code.push(contents.substr(i, 2));
-  }
-
-  Naz.parse(code, filename, delay, input, unlimited, false);
+    .map(x => x.match(/^\w+ +#.*$/) ? x.slice(0, x.indexOf(" #")) : x);
+    
+  Naz.parse(contents, filename, delay, input, unlimited, false);
 }
 
 runnerErr = str => {
