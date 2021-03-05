@@ -22,7 +22,6 @@ spinner.spinner = {
 
 var contents;
 var filename;
-var delay;
 
 var opcode = 0;
 var register = 0;
@@ -31,7 +30,6 @@ var instruction;
 
 var num = 0; // number to be used for the next instruction
 var fnum = 0; // number to be used when executing the f instruction
-var vnum = 0; // number to be used when executing the v instruction
 
 var jnum = 0; // number of the function to execute conditionally
 var cnum = undefined; // number to check against
@@ -40,8 +38,6 @@ var line = col = 1;
 
 var input;
 var output = "";
-
-var error; // the error we've thrown, if any
 
 var u;
 
@@ -79,11 +75,11 @@ var instructions = {
   "f": () => {
     fnum = num;
     if (opcode == 0 || opcode == 3) {
-      let capturedNum = num
+      let capturedNum = num;
       if (functions[capturedNum] == "") {
         throw new Error("use of undeclared function");
       }
-      let abort = undefined
+      let abort = undefined;
       for (var i = 0; i < functions[capturedNum].length && !abort; i += 2) {
         let val = functions[capturedNum].substr(i, 2);
         num = Number(val.slice(0, 1));
@@ -124,20 +120,19 @@ var instructions = {
     output += val.repeat(num);
   },
   "v": () => {
-    vnum = num;
     if (opcode == 0) {
-      if (variables[vnum] === undefined) {
+      if (variables[num] === undefined) {
         throw new Error("use of undeclared variable");
       }
-      register = variables[vnum];
+      register = variables[num];
     } else if (opcode == 2) {
-      variables[vnum] = register;
+      variables[num] = register;
       opcode = 0;
     } else if (opcode == 3) {
-      if (variables[vnum] === undefined) {
+      if (variables[num] === undefined) {
         throw new Error("use of undeclared variable");
       }
-      cnum = variables[vnum];
+      cnum = variables[num];
     }
   },
 
@@ -208,26 +203,12 @@ var instructions = {
   }
 };
 
-var functions = {
-  0: "",
-  1: "",
-  2: "",
-  3: "",
-  4: "",
-  5: "",
-  6: "",
-  7: "",
-  8: "",
-  9: ""
-};
-
-var variables = {};
+var functions = Array(10).fill("");
+var variables = [];
 
 function chkRegister() {
-  if (!u) {
-    if (register < -127 || register > 127) {
-      throw new Error("register value out of bounds");
-    }
+  if (!u && (register < -127 || register > 127)) {
+    throw new Error("register value out of bounds");
   }
 }
 
@@ -256,7 +237,6 @@ function step() {
 
   instruction = contents[line - 1].slice(col - 1, col + 1);
 
-  // newline
   if (instruction == "" || col > contents[line - 1].length) {
     func = false;
 
@@ -329,10 +309,9 @@ function step() {
   col++;
 }
 
-async function parse(c, file, d, inp, unlimited, t) {
+async function parse(c, file, delay, inp, unlimited, t) {
   contents = c;
   filename = file;
-  delay = d;
   input = inp;
   u = unlimited;
   test = t;
@@ -343,19 +322,13 @@ async function parse(c, file, d, inp, unlimited, t) {
   while (line <= contents.length) {
     try {
       step();
-    } catch (e) {
-      if (e instanceof RangeError) {
-        error = new Error("too much recursion");
-      } else {
-        error = e;
+    } catch (err) {
+      if (err instanceof RangeError) {
+        err = new Error("too much recursion");
       }
       spinner.stop();
       perf.stop();
-      if (!test) {
-        log(chalk.red("error: ") + error.message);
-        info(`  at ${filename}:${line}:${col}`);
-      }
-      return `${chalk.red("error:")} ${error.message}\n${chalk.cyan(`at ${line}:${col}`)}`;
+      return `${chalk.red("error:")} ${err.message}\n${chalk.cyan(`  at ${line}:${col}`)}`;
     }
 
     await sleep(delay);
@@ -369,7 +342,6 @@ async function parse(c, file, d, inp, unlimited, t) {
 
   if (!test) {
     log(chalk.green("finished") + chalk.cyan(` in ${time}`));
-    log(`output: ${output}`)
   }
 
   return `output: ${output}`;
@@ -378,35 +350,20 @@ async function parse(c, file, d, inp, unlimited, t) {
 // utils
 reset = () => {
   filename = cnum = input = u = undefined;
-  opcode = register = num = fnum = vnum = jnum = 0;
+  opcode = register = num = fnum = jnum = 0;
   line = col = 1;
   output = "";
   func = false;
-  functions = {
-    0: "",
-    1: "",
-    2: "",
-    3: "",
-    4: "",
-    5: "",
-    6: "",
-    7: "",
-    8: "",
-    9: ""
-  };
-  variables = {};
+  functions = Array(10).fill("");
+  variables = [];
 }
 
-log = str => { console.log(chalk.white(str)) }
-info = str => { log(chalk.cyan(str)) }
-success = str => { log(chalk.green(str)) }
-warn = str => { log(chalk.yellow(str)) }
+log = str => { console.log(chalk.white(str)) };
+info = str => { log(chalk.cyan(str)) };
+success = str => { log(chalk.green(str)) };
+warn = str => { log(chalk.yellow(str)) };
 
-function sleep(ms) {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms);
-  });
-}
+sleep = ms => new Promise(resolve => { setTimeout(resolve, ms); });
 
 // exports
 exports.parse = parse;

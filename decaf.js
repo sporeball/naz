@@ -61,7 +61,9 @@ function Decaf(runner) {
     indents++;
     console.log(`${indent()}${m[0]}`);
     if (m[1]) {
+      indents--;
       console.log(`${indent()}${m[1]}`);
+      indents++;
     }
     indents--;
     passing = false;

@@ -58,8 +58,9 @@ function naz() {
 
   contents = contents.split("\r\n")
     .map(x => x.match(/^\w+ +#.*$/) ? x.slice(0, x.indexOf(" #")) : x);
-    
-  Naz.parse(contents, filename, delay, input, unlimited, false);
+
+  Naz.parse(contents, filename, delay, input, unlimited, false)
+    .then(result => { console.log(result); });
 }
 
 runnerErr = str => {
