@@ -26,8 +26,6 @@ var filename;
 var opcode = 0;
 var register = 0;
 
-var instruction;
-
 var num = 0; // number to be used for the next instruction
 var fnum = 0; // number to be used when executing the f instruction
 
@@ -40,6 +38,8 @@ var input;
 var output = "";
 
 var u;
+
+var callStack = [];
 
 var func = false; // are we in the middle of declaring a function?
 var test = false; // are we running a test right now?
@@ -79,17 +79,29 @@ var instructions = {
       if (functions[capturedNum] == "") {
         throw new Error("use of undeclared function");
       }
+
+      callStack.push([fnum, line, col]);
+      line = lines[fnum];
+      col = cols[fnum] + 2;
+
       let abort = undefined;
       for (var i = 0; i < functions[capturedNum].length && !abort; i += 2) {
         let val = functions[capturedNum].substr(i, 2);
         num = Number(val.slice(0, 1));
         let instruction = val.slice(1, 2);
         abort = instructions[instruction]();
+        col += 2;
       }
+
+      let popped = callStack.pop();
+      line = popped[1];
+      col = popped[2];
     } else if (opcode == 1) {
       if (functions[num] != "") {
         throw new Error("attempt to redeclare function");
       }
+      lines[num] = line;
+      cols[num] = col;
       func = true;
     }
   },
@@ -204,6 +216,8 @@ var instructions = {
 };
 
 var functions = Array(10).fill("");
+var lines = Array(10).fill(0);
+var cols = Array(10).fill(0);
 var variables = [];
 
 function chkRegister() {
@@ -221,8 +235,6 @@ function chkCnum() {
 
 // execute a correctly formatted conditional instruction
 function conditional() {
-  opcode = 0;
-  num = jnum;
   instructions["f"]();
   cnum = undefined; // reset cnum
   return true; // abort current function
@@ -235,7 +247,7 @@ function step() {
     return;
   }
 
-  instruction = contents[line - 1].slice(col - 1, col + 1);
+  let instruction = contents[line - 1].slice(col - 1, col + 1);
 
   if (instruction == "" || col > contents[line - 1].length) {
     func = false;
@@ -328,7 +340,7 @@ async function parse(c, file, delay, inp, unlimited, t) {
       }
       spinner.stop();
       perf.stop();
-      return `${chalk.red("error:")} ${err.message}\n${chalk.cyan(`  at ${line}:${col}`)}`;
+      return `${chalk.red("error:")} ${err.message}\n${trace()}`;
     }
 
     await sleep(delay);
@@ -362,6 +374,30 @@ log = str => { console.log(chalk.white(str)) };
 info = str => { log(chalk.cyan(str)) };
 success = str => { log(chalk.green(str)) };
 warn = str => { log(chalk.yellow(str)) };
+
+trace = () => {
+  let str = "";
+  let f = test ? "" : `${filename}:`;
+  let l, c;
+  callStack.reverse();
+  if (callStack.length > 0) {
+    str += chalk.cyan(`  at ${callStack[0][0]}f (${f}${line}:${col})\n`);
+  }
+  for (var call = 0; call < callStack.length; call++) {
+    l = callStack[call][1];
+    c = callStack[call][2];
+    let fn;
+    if (call + 1 < callStack.length) {
+      str += chalk.cyan(`  at ${callStack[call + 1][0]}f (${f}${l}:${c})\n`);
+    }
+  }
+  if (callStack.length > 0) {
+    str += chalk.cyan(`  at ${f}${l}:${c}`);
+  } else {
+    str += chalk.cyan(`  at ${f}${line}:${col}`);
+  }
+  return str;
+}
 
 sleep = ms => new Promise(resolve => { setTimeout(resolve, ms); });
 
