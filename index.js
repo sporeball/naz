@@ -340,7 +340,8 @@ async function parse(c, file, delay, inp, unlimited, t) {
       }
       spinner.stop();
       perf.stop();
-      return `${chalk.red("error:")} ${err.message}\n${trace()}`;
+      err.message += `\n${trace()}`;
+      return `${chalk.red("error:")} ${err.message}`;
     }
 
     await sleep(delay);
@@ -375,28 +376,53 @@ info = str => { log(chalk.cyan(str)) };
 success = str => { log(chalk.green(str)) };
 warn = str => { log(chalk.yellow(str)) };
 
+// produce stack trace
 trace = () => {
-  let str = "";
   let f = test ? "" : `${filename}:`;
-  let l, c;
+  let l, c; // line and column where the function last read from the stack trace caused a problem
+  let arr = []; // array of lines to keep
+
   callStack.reverse();
+  // if something's on the stack, the interpreter halted within a function
+  // push where we are
   if (callStack.length > 0) {
-    str += chalk.cyan(`  at ${callStack[0][0]}f (${f}${line}:${col})\n`);
+    arr.push(chalk.cyan(`  at ${callStack[0][0]}f (${f}${line}:${col})\n`));
   }
+
+  // every item on the stack is an array with
+  // - function which caused a problem;
+  // - line where it was called;
+  // - col where it was called.
+  // l and c are updated with these values every time, but we only output a line with them if they don't come from the last item on the stack
   for (var call = 0; call < callStack.length; call++) {
     l = callStack[call][1];
     c = callStack[call][2];
-    let fn;
     if (call + 1 < callStack.length) {
-      str += chalk.cyan(`  at ${callStack[call + 1][0]}f (${f}${l}:${c})\n`);
+      arr.push(chalk.cyan(`  at ${callStack[call + 1][0]}f (${f}${l}:${c})\n`));
     }
   }
+
+  // the array will become extremely large under certain conditions
+  // we use fs to map its lines to their functions, find the first element which occurs twice, then drop all elements after its first occurrence
+  let fs = arr.map((x, i) => Number(x[10]));
+  for (var i = 0; i < fs.length; i++) {
+    if (fs.findIndex(x => x == fs[i]) != i) {
+      fs = fs.slice(0, fs.findIndex(x => x == fs[i]) + 1);
+      break;
+    }
+  };
+
+  arr = arr.slice(0, fs.length);
+
+  // if something's on the stack, the line and column of the top-level call are stored in l and c
+  // otherwise we're just at the top level
   if (callStack.length > 0) {
-    str += chalk.cyan(`  at ${f}${l}:${c}`);
+    arr.push(chalk.cyan(`  at ${f}${l}:${c}`));
   } else {
-    str += chalk.cyan(`  at ${f}${line}:${col}`);
+    arr.push(chalk.cyan(`  at ${f}${line}:${col}`));
   }
-  return str;
+
+  return arr.join("");
 }
 
 sleep = ms => new Promise(resolve => { setTimeout(resolve, ms); });

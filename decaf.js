@@ -61,9 +61,10 @@ function Decaf(runner) {
     indents++;
     console.log(`${indent()}${m[0]}`);
     if (m[1]) {
-      indents--;
-      console.log(`${indent()}${m[1]}`);
-      indents++;
+      m.shift();
+      for (let line of m) {
+        console.log(`${indent()}${line}`);
+      }
     }
     indents--;
     passing = false;
