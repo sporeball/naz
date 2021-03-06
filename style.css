@@ -62,7 +62,7 @@ div label, [type="checkbox"] {
 }
 
 #editor, #result {
-  width:300px;
+  width:305px;
   height:200px;
   display:inline-block
 }

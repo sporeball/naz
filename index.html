@@ -27,28 +27,8 @@
           </div>
           <button id="run" class="btn btn-dark d-inline-block">run</button>
           <button id="permalink" class="btn btn-light d-inline-block">permalink</button>
-          <button type="button" id="disclaimer" class="btn btn-link d-block" data-toggle="modal" data-target="#disclaimerModal">(disclaimer)</button>
         </div>
       </center>
-    </div>
-    <div class="modal fade" id="disclaimer_modal" tabindex="-1" role="dialog">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">disclaimer</h5>
-            <button type="button" class="close" data-dismiss="modal">
-              <span>&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <p>this web-based naz interpreter should be used <b>at your own risk.</b> everything <i>should</i> work, but you may still run into issues.</p>
-            <p>use of the <a href="https://github.com/sporeball/naz" target="_blank">original Node.js implementation</a> is <b>highly recommended.</b></p>
-          </div>
-          <div class="modal-footer">
-            <button id="close_disclaimer" class="btn btn-dark">OK</button>
-          </div>
-        </div>
-      </div>
     </div>
     <div class="container">
       <h3>instruction reference</h3>
@@ -75,7 +55,8 @@
       <p class="l"><kbd>3</kbd> - conditional opcode. the interpreter <b>must</b> parse a call to the <kbd>v</kbd> instruction, followed by a call to a conditional instruction (<kbd>l</kbd>, <kbd>e</kbd> or <kbd>g</kbd>). afterwards, the interpreter will return to opcode 0.</p>
       <h3>notes</h3>
       <p>the value in the register must always be between -127 and 127 inclusive, or program execution will <b>immediately halt.</b></p>
-      <p class="vl">conditional instructions can only be run in opcode 3.</p>
+      <p>conditional instructions can only be run in opcode 3.</p>
+      <p class="vl">anything placed after a <kbd>#</kbd> on a line will be ignored, allowing you to comment your code. <b>please note</b> that if placed on a line that also contains instructions, <b>at least one space</b> is <b>required</b> between the last instruction and that line's <kbd>#</kbd>.
     </div>
     <footer>
       <div class="footer text-muted">
@@ -83,8 +64,6 @@
       </div>
     </footer>
     <script src="res/ace.js"></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script src="res/eol.js"></script>
     <script src="script.js"></script>
   </body>

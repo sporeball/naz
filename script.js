@@ -10,34 +10,32 @@ var session = editor.getSession();
 
 editor.setTheme("ace/theme/monokai");
 editor.setOptions({
-  fontSize: 16
+  fontSize: 14
 });
 
 session.setOption("indentedSoftWrap", false);
 session.setUseWrapMode(true);
 
+var contents;
+
 var opcode = 0;
 var register = 0;
 
 var num = 0; // number to be used for the next instruction
-var fnum = 0; // number to be used when executing the f command
-var vnum = 0; // number to be used when executing the v command
+var fnum = 0; // number to be used when executing the f instruction
 
 var jnum = 0; // number of the function to execute conditionally
-var cnum = -999; // number to check against
+var cnum = undefined; // number to check against
 
-var i = 0; // the step the interpreter is on
 var line = col = 1;
 
 var input;
 var output = "";
 
-var error; // the error we've thrown, if any
+var callStack = [];
 
 var halt = false; // whether to halt the interpreter
 var func = false; // are we in the middle of declaring a function?
-
-var code = [];
 
 var aceCode; // the code inside the ace editor
 
@@ -82,14 +80,29 @@ var instructions = {
       if (functions[capturedNum] == "") {
         throw new Error("use of undeclared function");
       }
+
+      callStack.push([fnum, line, col]);
+      line = lines[fnum];
+      col = cols[fnum] + 2;
+
       let abort = undefined;
       for (var i = 0; i < functions[capturedNum].length && !halt && !abort; i += 2) {
         let val = functions[capturedNum].substr(i, 2);
         num = Number(val.slice(0, 1));
         let instruction = val.slice(1, 2);
         abort = instructions[instruction]();
+        col += 2;
       }
+
+      let popped = callStack.pop();
+      line = popped[1];
+      col = popped[2];
     } else if (opcode == 1) {
+      if (functions[num] != "") {
+        throw new Error("attempt to redeclare function");
+      }
+      lines[num] = line;
+      cols[num] = col;
       func = true;
     }
   },
@@ -111,20 +124,19 @@ var instructions = {
     output += val.repeat(num);
   },
   "v": () => {
-    vnum = num;
     if (opcode == 0) {
-      if (variables[vnum] == -999) {
+      if (variables[num] === undefined) {
         throw new Error("use of undeclared variable");
       }
-      register = variables[vnum];
+      register = variables[num];
     } else if (opcode == 2) {
-      variables[vnum] = register;
+      variables[num] = register;
       opcode = 0;
     } else if (opcode == 3) {
-      if (variables[vnum] == -999) {
+      if (variables[num] === undefined) {
         throw new Error("use of undeclared variable");
       }
-      cnum = variables[vnum];
+      cnum = variables[num];
     }
   },
 
@@ -165,7 +177,7 @@ var instructions = {
 
   // special instructions
   "n": () => {
-    if (variables[num] == -999) {
+    if (variables[num] === undefined) {
       throw new Error("use of undeclared variable")
     }
     variables[num] = -(variables[num]);
@@ -177,6 +189,9 @@ var instructions = {
 
     let val = input.charCodeAt(-1 + num);
     if (Number.isNaN(val)) {
+      if (num == 0) {
+        throw new Error("cannot read the 0th character");
+      }
       throw new Error("input string not long enough");
     }
 
@@ -192,31 +207,10 @@ var instructions = {
   }
 };
 
-var functions = {
-  0: "",
-  1: "",
-  2: "",
-  3: "",
-  4: "",
-  5: "",
-  6: "",
-  7: "",
-  8: "",
-  9: ""
-};
-
-var variables = {
-  0: -999,
-  1: -999,
-  2: -999,
-  3: -999,
-  4: -999,
-  5: -999,
-  6: -999,
-  7: -999,
-  8: -999,
-  9: -999
-};
+var functions = Array(10).fill("");
+var lines = Array(10).fill(0);
+var cols = Array(10).fill(0);
+var variables = [];
 
 function chkRegister() {
   if (register < -127 || register > 127) {
@@ -226,23 +220,28 @@ function chkRegister() {
 
 // check if we've actually set cnum
 function chkCnum() {
-  if (cnum == -999) {
+  if (cnum === undefined) {
     throw new Error("number to check against must be defined");
   }
 }
 
 // execute a correctly formatted conditional instruction
 function conditional() {
-  opcode = 0;
-  num = jnum;
   instructions["f"]();
-  cnum = -999; // reset cnum
+  cnum = undefined; // reset cnum
   return true; // abort current function
 }
 
-function step(n) {
-  // newline
-  if (code[n] == "\r\n") {
+function step() {
+  // line that is only a comment
+  if (contents[line - 1].match(/^ *#.*$/)) {
+    line++;
+    return;
+  }
+
+  let instruction = contents[line - 1].slice(col - 1, col + 1);
+
+  if (instruction == "" || col > contents[line - 1].length) {
     func = false;
 
     line++;
@@ -253,80 +252,91 @@ function step(n) {
     return;
   }
 
-  if (isNaN(code[n].slice(0, 1))) {
-    if (!(code[n].slice(0, 1) in instructions)) {
+  var number = instruction.slice(0, 1);
+  var letter = instruction.slice(1, 2);
+
+  // special case first
+  if (number == "#") {
+    throw new Error("a space is required before comments at the end of a line");
+  }
+
+  if (isNaN(number)) {
+    if (!(number in instructions)) {
       throw new Error("invalid instruction");
     }
     throw new Error("missing number literal");
   } else {
-    if (code[n].slice(1, 2) == "\r") {
+    if (letter == "\r") {
       throw new Error("number literal missing an instruction");
     }
   }
 
-  if (!isNaN(code[n].slice(1, 2))) {
+  if (!isNaN(letter)) {
     throw new Error("attempt to chain number literals");
   }
 
   // the instruction is formatted correctly, so we continue
 
-  num = Number(code[n].slice(0, 1));
+  num = Number(number);
   col++;
 
-  var instruction = code[n].slice(1, 2);
-  if (!(instruction in instructions)) {
+  if (!(letter in instructions)) {
     throw new Error("invalid instruction");
   }
 
   // we handle this as soon as possible to avoid issues
-  if (code[n] == "0x") {
+  if (instruction == "0x") {
     func = false;
     opcode = 0;
+    col++;
     return;
   }
 
-  if (opcode == 1 && func == false && code[n].slice(1, 2) != "f") {
+  if (opcode == 1 && func == false && letter != "f") {
     throw new Error("improper use of opcode 1");
   }
 
-  if (opcode == 2 && code[n].slice(1, 2) != "v") {
+  if (opcode == 2 && letter != "v") {
     throw new Error("improper use of opcode 2");
   }
 
+  if (opcode == 3) {
+    // last instruction was 3x
+    if (cnum === undefined && letter != "v") {
+      throw new Error("improper use of opcode 3");
+    }
+    // last two instructions were 3x and [0-9]v
+    if (cnum !== undefined && !(letter == "e" || letter == "g" || letter == "l")) {
+      throw new Error("improper use of opcode 3");
+    }
+  }
+
   if (func) { // are we in the middle of declaring a function?
-    // add the parsed command to the function we're declaring
-    functions[fnum] += code[n];
+    // add the parsed instruction to the function we're declaring
+    functions[fnum] += instruction;
+    col++;
     return;
   }
 
   // everything's correct, run the instruction
-  instructions[instruction]();
+  instructions[letter]();
 
   col++;
 }
 
-async function parse(c, inp) {
-  code = c;
-  if (inp == "") {
-    input = undefined;
-  } else {
-    input = inp;
-  }
-
-  while (i < code.length && !halt) {
+async function parse() {
+  while (line <= contents.length) {
     try {
-      step(i);
-    } catch (e) {
-      if (e instanceof RangeError) {
-        error = new Error("too much recursion");
-      } else {
-        error = e;
+      step();
+    } catch (err) {
+      if (err instanceof RangeError) {
+        err = new Error("too much recursion");
       }
-      return `error: ${error.message}\n  at ${line}:${col}`
+      err.message += `\n${trace()}`;
+      return `error: ${err.message}`;
     }
 
     await sleep(1);
-    i++;
   }
 
   if (halt) {
@@ -338,58 +348,85 @@ async function parse(c, inp) {
 
 // utils
 reset = () => {
-  opcode = register = num = fnum = vnum = jnum = i = 0;
-  cnum = -999;
+  cnum = input = undefined;
+  opcode = register = num = fnum = jnum = 0;
   line = col = 1;
-  input;
   output = "";
   halt = func = false;
-  functions = {
-    0: "",
-    1: "",
-    2: "",
-    3: "",
-    4: "",
-    5: "",
-    6: "",
-    7: "",
-    8: "",
-    9: ""
-  };
-  variables = {
-    0: -999,
-    1: -999,
-    2: -999,
-    3: -999,
-    4: -999,
-    5: -999,
-    6: -999,
-    7: -999,
-    8: -999,
-    9: -999
-  };
+  functions = Array(10).fill("");
+  lines = Array(10).fill(0);
+  cols = Array(10).fill(0);
+  variables = [];
+  callStack = [];
 }
 
-function sleep(ms) {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms);
-  });
+// produce stack trace
+trace = () => {
+  let l, c; // line and column where the function last read from the stack trace caused a problem
+  let arr = []; // array of lines to keep
+
+  callStack.reverse();
+  // if something's on the stack, the interpreter halted within a function
+  // push where we are
+  if (callStack.length > 0) {
+    arr.push(`  at ${callStack[0][0]}f (${line}:${col})\n`);
+  }
+
+  // every item on the stack is an array with
+  // - function which caused a problem;
+  // - line where it was called;
+  // - col where it was called.
+  // l and c are updated with these values every time, but we only output a line with them if they don't come from the last item on the stack
+  for (var call = 0; call < callStack.length; call++) {
+    l = callStack[call][1];
+    c = callStack[call][2];
+    if (call + 1 < callStack.length) {
+      arr.push(`  at ${callStack[call + 1][0]}f (${l}:${c})\n`);
+    }
+  }
+
+  // the array will become extremely large under certain conditions
+  // we use fs to map its lines to their functions, find the first element which occurs twice, then drop all elements after its first occurrence
+  let fs = arr.map(x => Number(x[5]));
+  for (var i = 0; i < fs.length; i++) {
+    if (fs.findIndex(x => x == fs[i]) != i) {
+      fs = fs.slice(0, fs.findIndex(x => x == fs[i]) + 1);
+      break;
+    }
+  }
+
+  arr = arr.slice(0, fs.length);
+
+  // if something's on the stack, the line and column of the top-level call are stored in l and c
+  // otherwise we're just at the top level
+  if (callStack.length > 0) {
+    arr.push(`  at ${l}:${c}`);
+  } else {
+    arr.push(`  at ${line}:${col}`);
+  }
+
+  return arr.join("");
 }
+
+sleep = ms => new Promise(resolve => { setTimeout(resolve, ms); });
 
 function exec() {
   reset();
 
   let data = eol.crlf(session.getValue());
 
-  code = [];
-  for (var i = 0; i < data.length; i += 2) {
-    code.push(data.substr(i, 2));
-  }
+  contents = data.split("\r\n")
+    .map(x => x.match(/^\w+ +#.*$/) ? x.slice(0, x.indexOf(" #")) : x);
 
   let inp = elInput.value;
   if (elNullByte.checked) inp += "\u0000";
+  if (inp == "") {
+    input = undefined;
+  } else {
+    input = inp;
+  }
 
-  parse(code, inp).then(function(result) {
+  parse().then(function(result) {
     elResult.innerHTML = result;
   });
 }
@@ -405,14 +442,6 @@ elPermalink.onclick = function() {
   let n = elNullByte.checked;
   window.location.href = encodeURI(`${window.location.href.split('?')[0]}?code=${encodeURIComponent(data)}&input=${encodeURIComponent(inp)}&n=${n}`);
 }
-
-$("#disclaimer").click(function() {
-  $('#disclaimer_modal').modal('toggle');
-});
-
-$("#close_disclaimer").click(function() {
-  $('#disclaimer_modal').modal('toggle');
-});
 
 window.addEventListener("DOMContentLoaded", e => {
   let params = new URLSearchParams(window.location.search);
