@@ -327,6 +327,9 @@ function step() {
 async function parse() {
   while (line <= contents.length) {
     try {
+      if (halt) {
+        return `program halted\n  at ${line}:${col - 1}\noutput: ${output}`;
+      }
       step();
     } catch (err) {
       if (err instanceof RangeError) {
@@ -337,10 +340,6 @@ async function parse() {
     }
 
     await sleep(1);
-  }
-
-  if (halt) {
-    return `program halted\n  at ${line}:${col}\noutput: ${output}`;
   }
 
   return `finished\noutput: ${output}`;
