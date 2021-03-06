@@ -54,6 +54,22 @@ div label, [type="checkbox"] {
   margin-bottom: calc(1em + 2rem) !important
 }
 
+.red {
+  color:#ff5c57
+}
+
+.yellow {
+  color:#f3f99d
+}
+
+.green {
+  color:#5af78e
+}
+
+.cyan {
+  color:#9aedfe
+}
+
 .footer {
   margin-bottom:0;
   padding:1.25rem;
@@ -61,10 +77,15 @@ div label, [type="checkbox"] {
   overflow:auto
 }
 
+#tryit {
+  display:flex;
+  width:625px
+}
+
 #editor, #result {
   width:305px;
   height:200px;
-  display:inline-block
+  flex:1
 }
 
 #editor {
@@ -85,15 +106,20 @@ div label, [type="checkbox"] {
 #result {
   margin-left:0.5em;
   padding-left:5px;
-  resize:none
+  text-align:left
 }
 
-#run, #permalink, #disclaimer {
+#result p {
+  margin-bottom:0;
+  white-space:pre-wrap
+}
+
+#run, #permalink {
   margin-top:1em
 }
 
 @media screen and (max-width:768px) {
-  #tryit {
+  #tryit, #options {
     display:none
   }
   .footer {

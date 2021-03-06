@@ -328,21 +328,20 @@ async function parse() {
   while (line <= contents.length) {
     try {
       if (halt) {
-        return `program halted\n  at ${line}:${col - 1}\noutput: ${output}`;
+        return `<p class="yellow">program halted</p><p class="cyan">  at ${line}:${col - 1}</p><p>output: ${output}</p>`;
       }
       step();
     } catch (err) {
       if (err instanceof RangeError) {
         err = new Error("too much recursion");
       }
-      err.message += `\n${trace()}`;
-      return `error: ${err.message}`;
+      return `<p><span class="red">error: </span>${err.message}</p><p class="cyan">${trace()}</p>`;
     }
 
     await sleep(1);
   }
 
-  return `finished\noutput: ${output}`;
+  return `<p class="green">finished</p><p>output: ${output}</p>`;
 }
 
 // utils
@@ -368,7 +367,7 @@ trace = () => {
   // if something's on the stack, the interpreter halted within a function
   // push where we are
   if (callStack.length > 0) {
-    arr.push(`  at ${callStack[0][0]}f (${line}:${col})\n`);
+    arr.push(`  at ${callStack[0][0]}f (${line}:${col})`);
   }
 
   // every item on the stack is an array with
@@ -380,7 +379,7 @@ trace = () => {
     l = callStack[call][1];
     c = callStack[call][2];
     if (call + 1 < callStack.length) {
-      arr.push(`  at ${callStack[call + 1][0]}f (${l}:${c})\n`);
+      arr.push(`  at ${callStack[call + 1][0]}f (${l}:${c})`);
     }
   }
 
@@ -404,7 +403,7 @@ trace = () => {
     arr.push(`  at ${line}:${col}`);
   }
 
-  return arr.join("");
+  return arr.join("</p><p class='cyan'>");
 }
 
 sleep = ms => new Promise(resolve => { setTimeout(resolve, ms); });
