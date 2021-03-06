@@ -308,6 +308,17 @@ function step() {
     throw new Error("improper use of opcode 2");
   }
 
+  if (opcode == 3) {
+    // last instruction was 3x
+    if (cnum === undefined && letter != "v") {
+      throw new Error("improper use of opcode 3");
+    }
+    // last two instructions were 3x and [0-9]v
+    if (cnum !== undefined && !(letter == "e" || letter == "g" || letter == "l")) {
+      throw new Error("improper use of opcode 3");
+    }
+  }
+
   if (func) { // are we in the middle of declaring a function?
     // add the parsed instruction to the function we're declaring
     functions[fnum] += instruction;
