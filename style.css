@@ -107,7 +107,7 @@ div label, [type="checkbox"] {
   margin-left:0.5em;
   padding-left:5px;
   text-align:left;
-  overflow:scroll
+  overflow-y:auto
 }
 
 #result p {
