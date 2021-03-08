@@ -28,7 +28,7 @@ $ node naz.js filename.naz
 ```
 
 #### online
-you can also experiment with naz using the **beta** [web-based interpreter](https://sporeball.dev/naz)! this is a lot more unstable compared to the original Node-based implementation, but should work if you're in a hurry!
+you can also experiment with naz using the [web-based interpreter](https://sporeball.dev/naz)! this is usually given less priority than the original Node-based implementation, but should work if you're in a hurry!
 
 ### instruction reference
 - `0-9` - number literal. exactly **one** of these **must** be placed before every instruction.
