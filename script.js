@@ -414,7 +414,7 @@ function exec() {
   let data = eol.crlf(session.getValue());
 
   contents = data.split("\r\n")
-    .map(x => x.match(/^\w+ +#.*$/) ? x.slice(0, x.indexOf(" #")) : x);
+    .map(x => x.match(/^\w+ +#.*$/) ? x.slice(0, x.indexOf(" #")).trimEnd() : x);
 
   let inp = elInput.value;
   if (elNullByte.checked) inp += "\u0000";
