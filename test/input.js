@@ -8,8 +8,8 @@ describe("input", function() {
   describe("rot13", function() {
     this.should = "ROT-13 transform the input";
     tests = [
-      {input: "Hello, World!\u0002", expected: "Uryyb, Jbeyq!"},
-      {input: "!@#$%^&*()\u0002", expected: "!@#$%^&*()"},
+      {input: "Hello, World!\u0000", expected: "Uryyb, Jbeyq!"},
+      {input: "!@#$%^&*()\u0000", expected: "!@#$%^&*()"},
     ];
     tests.forEach(function(test) {
       it(`${test.input} ${chalk.gray("->")} ${test.expected}`, async function() {
@@ -34,9 +34,9 @@ describe("input", function() {
   describe("cg/compactify", function() {
     this.should = "remove all vowels after the first character";
     tests = [
-      {input: "i\u0002", expected: "i"},
-      {input: "ate\u0002", expected: "at"},
-      {input: "potato\u0002", expected: "ptt"}
+      {input: "i\u0000", expected: "i"},
+      {input: "ate\u0000", expected: "at"},
+      {input: "potato\u0000", expected: "ptt"}
     ];
     tests.forEach(function(test) {
       it(`${test.input} ${chalk.gray("->")} ${test.expected}`, async function() {
@@ -47,7 +47,7 @@ describe("input", function() {
   describe("cg/doublespeak", function() {
     this.should = "output each character twice";
     tests = [
-      {input: "Double speak!\u0002", expected: "DDoouubbllee  ssppeeaakk!!"},
+      {input: "Double speak!\u0000", expected: "DDoouubbllee  ssppeeaakk!!"},
     ];
     tests.forEach(function(test) {
       it(`${test.input} ${chalk.gray("->")} ${test.expected}`, async function() {
@@ -58,7 +58,7 @@ describe("input", function() {
   describe("cg/fullwidth", function() {
     this.should = "output each character with a space after it";
     tests = [
-      {input: "Full width text\u0002", expected: "F u l l   w i d t h   t e x t "},
+      {input: "Full width text\u0000", expected: "F u l l   w i d t h   t e x t "},
     ];
     tests.forEach(function(test) {
       it(`${test.input} ${chalk.gray("->")} ${test.expected}`, async function() {
@@ -83,8 +83,8 @@ describe("input", function() {
   describe("cg/lowercase", function() {
     this.should = "convert the input string to lowercase";
     tests = [
-      {input: "HELLO, WORLD\u0002", expected: "hello, world"},
-      {input: "!!!\u0002", expected: "!!!"}
+      {input: "HELLO, WORLD\u0000", expected: "hello, world"},
+      {input: "!!!\u0000", expected: "!!!"}
     ];
     tests.forEach(function(test) {
       it(`${test.input} ${chalk.gray("->")} ${test.expected}`, async function() {

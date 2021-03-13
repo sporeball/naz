@@ -1,11 +1,29 @@
-2a2x1v
-9a9m1a2x2v
-9a9a9a2x3v
+# dd
+# implements User:A's finite state automaton "dd"
 
+2x1v         # set variable 1 equal to 0
+2a9a9m1a2x2v # set variable 2 equal to 100 ("d")
+
+# function 1
+# output "d" twice, then call function 2
 1x1f2v2o2f
-1x2f1r3x1v5e3x2v3e3x3v4l
-1x3f1r3x1v5e3x2v1e3x3v2l
-1x4f2f
-1x5f0a
+
+# function 2
+# read a byte of input
+# goto function 4 if it equals variable 1
+# goto function 3 if it equals variable 2
+# otherwise, call the function again
+1x2f1r3x1v4e3x2v3e2f
+
+# function 3
+# read another byte of input
+# goto function 4 if it equals variable 1
+# goto function 1 if it equals variable 2
+# otherwise, call function 2
+1x3f1r3x1v4e3x2v1e2f
+
+# function 4
+# add 0 to the register
+1x4f0a
 
 2f

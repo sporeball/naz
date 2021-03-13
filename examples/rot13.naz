@@ -1,18 +1,52 @@
-2a2x1v
-6a8m2x2v
-9a4a2x3v
-9a5a2x4v
-5a2x5v
-9a4a2x6v
-9a5a2x7v
+# CGCC question 4
+# (174 bytes minified)
 
+2x1v     # set variable 1 equal to 0
+8a8m2x2v # set variable 2 equal to 64 ("@")
+9a4a2x3v # set variable 3 equal to 77 ("M")
+9a5a2x4v # set variable 4 equal to 91 ("[")
+5a2x5v   # set variable 5 equal to 96 ("`")
+9a4a2x6v # set variable 6 equal to 109 ("m")
+9a5a2x7v # set variable 7 equal to 123 ("{")
+
+# function 1
+# read a byte of input
+# goto function 7 if it equals variable 1
+# goto function 5 if it's greater than variable 5
+# goto function 2 if it's greater than variable 2
+# otherwise, call function 8
 1x1f1r3x1v7e3x5v5g3x2v2g8f
+
+# function 2
+# goto function 3 if the register is less than variable 4
+# otherwise, call function 8
 1x2f3x4v3l8f
+
+# function 3
+# goto function 4 if the register is greater than variable 3
+# otherwise, add 13 and call function 8
 1x3f3x3v4g9a4a8f
+
+# function 4
+# subtract 13 and call function 8
 1x4f9s4s8f
+
+# function 5
+# goto function 6 if the register is less than variable 7
+# otherwise, call function 8
 1x5f3x7v6l8f
+
+# function 6
+# goto function 4 if the register is greater than variable 6
+# otherwise, add 13 and call function 8
 1x6f3x6v4g9a4a8f
+
+# function 7
+# add 0 to the register
 1x7f0a
+
+# function 8
+# output, then call function 1
 1x8f1o1f
 
 1f

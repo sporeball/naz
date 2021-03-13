@@ -11,7 +11,7 @@ function parse(file, input, expected) {
     contents = eol.crlf(fs.readFileSync(path.join(__dirname, `../examples/${file}.naz`), {encoding: "utf-8"}, function(){}));
 
     contents = contents.split("\r\n")
-      .map(x => x.match(/^\w+ +#.*$/) ? x.slice(0, x.indexOf(" #")) : x);
+      .map(x => x.match(/^\w+ +#.*$/) ? x.slice(0, x.indexOf(" #")).trimEnd() : x);
 
     Naz.parse(contents, "", 1, input, false, true).then(function(output) {
       setTimeout(function() {

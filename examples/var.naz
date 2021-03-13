@@ -1,4 +1,7 @@
-9a7m2a1o
-2x1v
-9s9s1s3o
-1v1o
+# var
+# illustrates variable usage
+
+9a7m2a1o # output "A"
+2x1v     # store this in variable 1
+9s9s1s3o # output "..."
+1v1o     # use variable 1 to quickly output "A" again

@@ -1,1 +1,27 @@
-8a5m2x1v1a2x2v4a2x3v9a9a5a2x4v1x1f2r3x3v1e2f0x1x2f3x1v3e3x2v5e3x4v6e4f0x1x3f0m1o0x1x4f0m1a1o0x1x5f0m2a1o0x1x6f0m3a1o0x1f
+# CGCC question 202894
+# (120 bytes minified)
+
+8a5m2x1v   # set variable 1 equal to 40 ("(")
+1a2x2v     # set variable 2 equal to 41 (")")
+4a2x3v     # set variable 3 equal to 45 ("-")
+9a9a5a2x4v # set variable 4 equal to 68 ("D")
+
+# function 1
+# read the second byte of input
+# goto the start of the function if it equals variable 3
+# otherwise, call function 2
+1x1f2r3x3v1e2f
+
+# function 2
+# goto function 3 if the register equals variable 1
+# goto function 5 if the register equals variable 2
+# goto function 6 if the register equals variable 4
+# otherwise, call function 4
+1x2f3x1v3e3x2v5e3x4v6e4f
+
+1x3f0m1o
+1x4f0m1a1o
+1x5f0m2a1o
+1x6f0m3a1o
+
+1f

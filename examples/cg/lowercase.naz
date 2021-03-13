@@ -1,1 +1,28 @@
-2a2x1v4m8m2x2v2d3m5s2x3v1x1f1r3x1v4e3x2v2g1o1f0x1x2f3x3v3l1o1f0x1x3f8a8a8a8a1o1f0x1x4f0a0x1f
+# CGCC question 12760
+# (90 bytes minified)
+
+2x1v       # set variable 1 equal to 0
+8a8m2x2v   # set variable 2 equal to 64 ("@")
+2d3m5s2x3v # set variable 3 equal to 91 ("[")
+
+# function 1
+# read a byte of input
+# goto function 4 if it equals variable 1
+# goto function 2 if it's greater than variable 2
+# otherwise, output it and call the function again
+1x1f1r3x1v4e3x2v2g1o1f
+
+# function 2
+# goto function 3 if the register is less than variable 3
+# otherwise, output it and call function 1
+1x2f3x3v3l1o1f
+
+# function 3
+# add 32, output, and call function 1
+1x3f8a8a8a8a1o1f
+
+# function 4
+# add 0 to the register
+1x4f0a
+
+1f

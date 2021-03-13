@@ -1,1 +1,16 @@
-2a2x1v1x1f0a0x1x2f1r3x1v1e1o0m8a4m1o2f0x2f
+# CGCC question 75979
+# (40 bytes minified)
+
+2x1v # set variable 1 equal to 0
+
+# function 1
+# add 0 to the register
+1x1f0a
+
+# function 2
+# read a byte of input
+# goto function 1 if it equals variable 1
+# otherwise, output it, output a space, and call the function again
+1x2f1r3x1v1e1o0m8a4m1o2f
+
+2f
