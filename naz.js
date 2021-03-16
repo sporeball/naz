@@ -9,7 +9,6 @@ const Naz = require("./index.js");
 
 const chalk = require("chalk");
 const fs = require("fs");
-const path = require("path");
 const eol = require("eol");
 
 const args = require("yeow")({
@@ -42,7 +41,7 @@ function naz() {
 
   if (args["file"]) {
     try {
-      input = fs.readFileSync(path.join(__dirname, args["file"]), {encoding: "utf-8"}, function(){});
+      input = fs.readFileSync(args["file"], {encoding: "utf-8"}, function(){});
     } catch (e) {
       runnerErr("input file not found");
     }
@@ -51,7 +50,7 @@ function naz() {
   // get file contents
   // also normalizes line endings to CRLF
   try {
-    var contents = eol.crlf(fs.readFileSync(path.join(__dirname, program), {encoding: "utf-8"}, function(){}));
+    var contents = eol.crlf(fs.readFileSync(program, {encoding: "utf-8"}, function(){}));
   } catch (e) {
     runnerErr("file not found");
   }
