@@ -66,6 +66,7 @@ you can also experiment with naz using the [web-based interpreter](https://spore
 - `-d` / `--delay` - sets the delay between execution steps (default: 1ms) (optional)
 - `-f` / `--file` - sets the file whose contents will be read by the `r` instruction. this takes precedence over the `-i` flag (default: none) (optional)
 - `-i` / `--input` - sets the string to use as input, to be read by the `r` instruction (default: none) (optional)
+- `-n` / `--null` - if present, a null byte (U+0000) will be appended to the input
 - `-u` / `--unlimited` - if present, the default limits on integer values will be removed
 
 #### notes

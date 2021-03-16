@@ -32,7 +32,8 @@ const args = require("yeow")({
     type: "string",
     aliases: "-i / --input"
   },
-  "unlimited": { aliases: "-u / --unlimited" }
+  "unlimited": { aliases: "-u / --unlimited" },
+  "null": { aliases: "-n / --null" }
 });
 
 function naz() {
@@ -46,6 +47,8 @@ function naz() {
       runnerErr("input file not found");
     }
   }
+
+  if (args["null"]) input += "\u0000";
 
   // get file contents
   // also normalizes line endings to CRLF
