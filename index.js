@@ -20,31 +20,37 @@ spinner.spinner = {
   "frames": ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
 }
 
-var contents;
-var filename;
+let contents;
+let filename;
 
-var opcode = 0;
-var register = 0;
+let opcode = 0;
+let register = 0;
 
-var num = 0; // number to be used for the next instruction
-var fnum = 0; // number to be used when executing the f instruction
+let num = 0; // number to be used for the next instruction
+let fnum = 0; // number to be used when executing the f instruction
 
-var jnum = 0; // number of the function to execute conditionally
-var cnum = undefined; // number to check against
+let jnum = 0; // number of the function to execute conditionally
+let cnum = undefined; // number to check against
 
-var line = col = 1;
+let line = 1;
+let col = 1;
 
-var input;
-var output = "";
+let input;
+let output = "";
 
-var u;
+let u;
 
-var callStack = [];
+let functions = Array(10).fill("");
+let variables = [];
+let lines = Array(10).fill(0); // line numbers where functions are declared
+let cols = Array(10).fill(0); // column numbers where functions are declared
 
-var func = false; // are we in the middle of declaring a function?
-var test = false; // are we running a test right now?
+let callStack = [];
 
-var instructions = {
+let func = false; // are we in the middle of declaring a function?
+let test = false; // are we running a test right now?
+
+const instructions = {
   // arithmetic instructions
   "a": () => {
     register += num;
@@ -85,7 +91,7 @@ var instructions = {
       col = cols[fnum] + 2;
 
       let abort = undefined;
-      for (var i = 0; i < functions[capturedNum].length && !abort; i += 2) {
+      for (let i = 0; i < functions[capturedNum].length && !abort; i += 2) {
         let val = functions[capturedNum].substr(i, 2);
         num = Number(val.slice(0, 1));
         let instruction = val.slice(1, 2);
@@ -150,34 +156,19 @@ var instructions = {
 
   // conditional instructions
   "l": () => {
-    if (opcode != 3) {
-      throw new Error("conditionals must run in opcode 3");
-    }
-    jnum = num;
-    chkCnum();
-    opcode = 0;
+    preConditional();
     if (register < cnum) {
       return conditional();
     }
   },
   "e": () => {
-    if (opcode != 3) {
-      throw new Error("conditionals must run in opcode 3");
-    }
-    jnum = num;
-    chkCnum();
-    opcode = 0;
+    preConditional();
     if (register == cnum) {
       return conditional();
     }
   },
   "g": () => {
-    if (opcode != 3) {
-      throw new Error("conditionals must run in opcode 3");
-    }
-    jnum = num;
-    chkCnum();
-    opcode = 0;
+    preConditional();
     if (register > cnum) {
       return conditional();
     }
@@ -186,7 +177,7 @@ var instructions = {
   // special instructions
   "n": () => {
     if (variables[num] === undefined) {
-      throw new Error("use of undeclared variable")
+      throw new Error("use of undeclared variable");
     }
     variables[num] = -(variables[num]);
   },
@@ -198,9 +189,9 @@ var instructions = {
     let val = input.charCodeAt(-1 + num);
     if (Number.isNaN(val)) {
       if (num == 0) {
-        throw new Error("cannot read the 0th character")
+        throw new Error("cannot read the 0th character");
       }
-      throw new Error("input string not long enough")
+      throw new Error("input string not long enough");
     }
 
     register = val;
@@ -215,22 +206,21 @@ var instructions = {
   }
 };
 
-var functions = Array(10).fill("");
-var lines = Array(10).fill(0);
-var cols = Array(10).fill(0);
-var variables = [];
-
 function chkRegister() {
   if (!u && (register < -127 || register > 127)) {
     throw new Error("register value out of bounds");
   }
 }
 
-// check if we've actually set cnum
-function chkCnum() {
+function preConditional() {
+  if (opcode != 3) {
+    throw new Error("conditionals must run in opcode 3");
+  }
   if (cnum === undefined) {
     throw new Error("number to check against must be defined");
   }
+  jnum = num;
+  opcode = 0;
 }
 
 // execute a correctly formatted conditional instruction
@@ -260,8 +250,8 @@ function step() {
     return;
   }
 
-  var number = instruction.slice(0, 1);
-  var letter = instruction.slice(1, 2);
+  let number = instruction.slice(0, 1);
+  let letter = instruction.slice(1, 2);
 
   // special case first
   if (number == "#") {
@@ -372,7 +362,7 @@ async function parse(c, file, delay, inp, unlimited, t) {
 }
 
 // utils
-reset = () => {
+const reset = () => {
   filename = cnum = input = u = undefined;
   opcode = register = num = fnum = jnum = 0;
   line = col = 1;
@@ -382,13 +372,13 @@ reset = () => {
   variables = [];
 }
 
-log = str => { console.log(chalk.white(str)) };
-info = str => { log(chalk.cyan(str)) };
-success = str => { log(chalk.green(str)) };
-warn = str => { log(chalk.yellow(str)) };
+const log = str => { console.log(chalk.white(str)) };
+const info = str => { log(chalk.cyan(str)) };
+const success = str => { log(chalk.green(str)) };
+const warn = str => { log(chalk.yellow(str)) };
 
 // produce stack trace
-trace = () => {
+const trace = () => {
   let f = test ? "" : `${filename}:`;
   let l, c; // line and column where the function last read from the stack trace caused a problem
   let arr = []; // array of lines to keep
@@ -405,7 +395,7 @@ trace = () => {
   // - line where it was called;
   // - col where it was called.
   // l and c are updated with these values every time, but we only output a line with them if they don't come from the last item on the stack
-  for (var call = 0; call < callStack.length; call++) {
+  for (let call = 0; call < callStack.length; call++) {
     l = callStack[call][1];
     c = callStack[call][2];
     if (call + 1 < callStack.length) {
@@ -416,7 +406,7 @@ trace = () => {
   // the array will become extremely large under certain conditions
   // we use fs to map its lines to their functions, find the first element which occurs twice, then drop all elements after its first occurrence
   let fs = arr.map((x, i) => Number(x[10]));
-  for (var i = 0; i < fs.length; i++) {
+  for (let i = 0; i < fs.length; i++) {
     if (fs.findIndex(x => x == fs[i]) != i) {
       fs = fs.slice(0, fs.findIndex(x => x == fs[i]) + 1);
       break;
@@ -436,10 +426,6 @@ trace = () => {
   return arr.join("");
 }
 
-sleep = ms => new Promise(resolve => { setTimeout(resolve, ms); });
+const sleep = ms => new Promise(resolve => { setTimeout(resolve, ms); });
 
-// exports
-exports.parse = parse;
-exports.reset = reset;
-exports.log = log;
-exports.warn = warn;
+module.exports = { parse, reset, log, warn };

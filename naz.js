@@ -37,8 +37,9 @@ const args = require("yeow")({
 });
 
 function naz() {
-  var {program, delay, input, unlimited} = args;
-  var filename = program.slice(program.lastIndexOf("/") + 1);
+  let contents;
+  let {program, delay, input, unlimited} = args;
+  let filename = program.slice(program.lastIndexOf("/") + 1);
 
   if (args["file"]) {
     try {
@@ -53,7 +54,7 @@ function naz() {
   // get file contents
   // also normalizes line endings to CRLF
   try {
-    var contents = eol.crlf(fs.readFileSync(program, {encoding: "utf-8"}, function(){}));
+    contents = eol.crlf(fs.readFileSync(program, {encoding: "utf-8"}, function(){}));
   } catch (e) {
     runnerErr("file not found");
   }
@@ -65,7 +66,7 @@ function naz() {
     .then(result => { console.log(result); });
 }
 
-runnerErr = str => {
+const runnerErr = str => {
   Naz.log(chalk.red("error: ") + str);
   process.exit(1);
 }

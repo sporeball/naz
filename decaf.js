@@ -2,9 +2,7 @@
 
 const mocha = require('mocha');
 const {
-  EVENT_RUN_BEGIN,
   EVENT_RUN_END,
-  EVENT_TEST_BEGIN,
   EVENT_TEST_FAIL,
   EVENT_TEST_PASS,
   EVENT_SUITE_BEGIN,
