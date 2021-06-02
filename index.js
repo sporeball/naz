@@ -114,7 +114,7 @@ const instructions = {
   "h": () => {
     spinner.stop();
     warn("program halted");
-    info(`  at ${filename}:${line}:${col}`);
+    log(trace());
     if (!test) log(`output: ${output}`)
     process.exit(0);
   },
