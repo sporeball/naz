@@ -44,6 +44,7 @@ var elPermalink = document.getElementById("permalink");
 var elResult = document.getElementById("result");
 var elInput = document.getElementById("input");
 var elNullByte = document.getElementById("nullByte");
+var elBytes = document.getElementById("bytes");
 
 var instructions = {
   // arithmetic instructions
@@ -408,6 +409,11 @@ trace = () => {
 
 sleep = ms => new Promise(resolve => { setTimeout(resolve, ms); });
 
+function updateBytes() {
+  let data = eol.crlf(session.getValue());
+  elBytes.innerHTML = `(${data.length} bytes)`;
+}
+
 function exec() {
   reset();
 
@@ -441,10 +447,16 @@ elPermalink.onclick = function() {
   window.location.href = encodeURI(`${window.location.href.split('?')[0]}?code=${encodeURIComponent(data)}&input=${encodeURIComponent(inp)}&n=${n}`);
 }
 
+session.on("change", () => {
+  updateBytes();
+});
+
 window.addEventListener("DOMContentLoaded", e => {
   let params = new URLSearchParams(window.location.search);
   session.setValue(params.get("code") || "9a7m2a1o");
   session.setValue(unescape(session.getValue()));
+  updateBytes();
+
   elInput.value = params.get("input") || "";
   elInput.value = unescape(elInput.value);
   if (params.get("n") == "true") {

@@ -79,7 +79,13 @@ div label, [type="checkbox"] {
 
 #tryit {
   display:flex;
-  width:625px
+  width:625px;
+  flex-wrap:wrap
+}
+
+#bytes {
+  text-align:left;
+  flex:0 0 100%
 }
 
 #editor, #result {
