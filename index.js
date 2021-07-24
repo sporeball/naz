@@ -322,7 +322,7 @@ function step() {
   col++;
 }
 
-async function parse(c, file, delay, inp, unlimited, t) {
+async function parse(c, file, inp, unlimited, t) {
   contents = c;
   filename = file;
   input = inp;
@@ -344,8 +344,6 @@ async function parse(c, file, delay, inp, unlimited, t) {
       err.message += `\n${trace()}`;
       return `${chalk.red("error:")} ${err.message}`;
     }
-
-    await sleep(delay);
   }
 
   // stop
@@ -425,7 +423,5 @@ const trace = () => {
 
   return arr.join("");
 }
-
-const sleep = ms => new Promise(resolve => { setTimeout(resolve, ms); });
 
 module.exports = { parse, reset, log, warn };

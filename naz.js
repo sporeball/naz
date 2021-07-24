@@ -19,11 +19,6 @@ const args = require("yeow")({
     missing: "a file must be passed",
     invalid: "not a .naz file"
   },
-  "delay": {
-    type: "number",
-    aliases: "-d / --delay",
-    default: 1
-  },
   "file": {
     type: "file",
     aliases: "-f / --file"
@@ -38,7 +33,7 @@ const args = require("yeow")({
 
 function naz() {
   let contents;
-  let {program, delay, input, unlimited} = args;
+  let {program, input, unlimited} = args;
   let filename = program.slice(program.lastIndexOf("/") + 1);
 
   if (args["file"]) {
@@ -62,7 +57,7 @@ function naz() {
   contents = contents.split("\r\n")
     .map(x => x.match(/^\w+ +#.*$/) ? x.slice(0, x.indexOf(" #")).trimEnd() : x);
 
-  Naz.parse(contents, filename, delay, input, unlimited, false)
+  Naz.parse(contents, filename, input, unlimited, false)
     .then(result => { console.log(result); });
 }
 

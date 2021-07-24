@@ -13,7 +13,7 @@ function parse(file, input, expected) {
     contents = contents.split("\r\n")
       .map(x => x.match(/^\w+ +#.*$/) ? x.slice(0, x.indexOf(" #")).trimEnd() : x);
 
-    Naz.parse(contents, "", 1, input, false, true).then(function(output) {
+    Naz.parse(contents, "", input, false, true).then(function(output) {
       setTimeout(function() {
         if (output.indexOf(`${chalk.red("error:")}`) == 0) {
           reject(new Error(output));
