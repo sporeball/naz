@@ -7,18 +7,18 @@
 */
 
 // dependencies
-const chalk = require("chalk");
-const perf = require("execution-time")();
-const ms = require("pretty-ms");
+const chalk = require('chalk');
+const perf = require('execution-time')();
+const ms = require('pretty-ms');
 
 // spinner code
-const ora = require("ora");
-const spinner = ora("running...")
-spinner.color = "yellow";
+const ora = require('ora');
+const spinner = ora('running...');
+spinner.color = 'yellow';
 spinner.spinner = {
-  "interval": 80,
-  "frames": ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
-}
+  interval: 80,
+  frames: ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
+};
 
 let contents;
 let filename;
@@ -28,146 +28,145 @@ let register = 0;
 
 let num = 0; // number to be used for the next instruction
 let fnum = 0; // number to be used when executing the f instruction
-
-let jnum = 0; // number of the function to execute conditionally
-let cnum = undefined; // number to check against
+let cnum;
 
 let line = 1;
 let col = 1;
 
 let input;
-let output = "";
+let output = '';
 
 let u;
 
-let functions = Array(10).fill("");
+let functions = Array(10).fill('');
 let variables = [];
-let lines = Array(10).fill(0); // line numbers where functions are declared
-let cols = Array(10).fill(0); // column numbers where functions are declared
+const lines = Array(10).fill(0); // line numbers where functions are declared
+const cols = Array(10).fill(0); // column numbers where functions are declared
 
-let callStack = [];
+const callStack = [];
 
 let func = false; // are we in the middle of declaring a function?
 let test = false; // are we running a test right now?
 
 const instructions = {
   // arithmetic instructions
-  "a": () => {
+  a: () => {
     register += num;
     chkRegister();
   },
-  "d": () => {
-    if (num == 0) {
-      throw new Error("division by zero");
+  d: () => {
+    if (num === 0) {
+      throw new Error('division by zero');
     }
     register = Math.floor(register / num);
   },
-  "m": () => {
+  m: () => {
     register *= num;
     chkRegister();
   },
-  "s": () => {
+  s: () => {
     register -= num;
     chkRegister();
   },
-  "p": () => {
-    if (num == 0) {
-      throw new Error("division by zero");
+  p: () => {
+    if (num === 0) {
+      throw new Error('division by zero');
     }
     register = register % num;
   },
 
   // program flow instructions
-  "f": () => {
+  f: () => {
     fnum = num;
-    if (opcode == 0 || opcode == 3) {
-      let capturedNum = num;
-      if (functions[capturedNum] == "") {
-        throw new Error("use of undeclared function");
+    if (opcode === 0 || opcode === 3) {
+      const capturedNum = num;
+      if (functions[capturedNum] === '') {
+        throw new Error('use of undeclared function');
       }
 
       callStack.push([fnum, line, col]);
       line = lines[fnum];
       col = cols[fnum] + 2;
 
-      let abort = undefined;
+      let abort;
       for (let i = 0; i < functions[capturedNum].length && !abort; i += 2) {
-        let val = functions[capturedNum].substr(i, 2);
+        const val = functions[capturedNum].substr(i, 2);
         num = Number(val.slice(0, 1));
-        let instruction = val.slice(1, 2);
+        const instruction = val.slice(1, 2);
         abort = instructions[instruction]();
         col += 2;
       }
 
-      let popped = callStack.pop();
+      const popped = callStack.pop();
       line = popped[1];
       col = popped[2];
-    } else if (opcode == 1) {
-      if (functions[num] != "") {
-        throw new Error("attempt to redeclare function");
+    } else if (opcode === 1) {
+      if (functions[num] !== '') {
+        throw new Error('attempt to redeclare function');
       }
       lines[num] = line;
       cols[num] = col;
       func = true;
     }
   },
-  "h": () => {
+  h: () => {
     spinner.stop();
-    warn("program halted");
-    log(trace());
-    if (!test) log(`output: ${output}`)
+    warn('program halted');
+    console.log(trace());
+    if (!test) {
+      console.log(`output: ${output}`);
+    }
     process.exit(0);
   },
-  "o": () => {
+  o: () => {
     let val;
     if (register > -1 && register < 10) {
       val = register.toString();
-    } else if (register == 10) {
-      val = "\n";
+    } else if (register === 10) {
+      val = '\n';
     } else if (register > 31 && register < 127) {
       val = String.fromCharCode(register);
     } else {
       if (u) {
         val = String.fromCharCode(register);
-      }
-      else {
-        throw new Error("invalid output value");
+      } else {
+        throw new Error('invalid output value');
       }
     }
 
     output += val.repeat(num);
   },
-  "v": () => {
-    if (opcode == 0) {
+  v: () => {
+    if (opcode === 0) {
       if (variables[num] === undefined) {
-        throw new Error("use of undeclared variable");
+        throw new Error('use of undeclared variable');
       }
       register = variables[num];
-    } else if (opcode == 2) {
+    } else if (opcode === 2) {
       variables[num] = register;
       opcode = 0;
-    } else if (opcode == 3) {
+    } else if (opcode === 3) {
       if (variables[num] === undefined) {
-        throw new Error("use of undeclared variable");
+        throw new Error('use of undeclared variable');
       }
       cnum = variables[num];
     }
   },
 
   // conditional instructions
-  "l": () => {
+  l: () => {
     preConditional();
     if (register < cnum) {
       return conditional();
     }
   },
-  "e": () => {
+  e: () => {
     preConditional();
-    if (register == cnum) {
+    if (register === cnum) {
       return conditional();
     }
   },
-  "g": () => {
+  g: () => {
     preConditional();
     if (register > cnum) {
       return conditional();
@@ -175,102 +174,100 @@ const instructions = {
   },
 
   // special instructions
-  "n": () => {
+  n: () => {
     if (variables[num] === undefined) {
-      throw new Error("use of undeclared variable");
+      throw new Error('use of undeclared variable');
     }
     variables[num] = -(variables[num]);
   },
-  "r": () => {
+  r: () => {
     if (input === undefined) {
-      throw new Error("no input provided");
+      throw new Error('no input provided');
     }
 
-    let val = input.charCodeAt(-1 + num);
+    const val = input.charCodeAt(-1 + num);
     if (Number.isNaN(val)) {
-      if (num == 0) {
-        throw new Error("cannot read the 0th character");
+      if (num === 0) {
+        throw new Error('cannot read the 0th character');
       }
-      throw new Error("input string not long enough");
+      throw new Error('input string not long enough');
     }
 
     register = val;
-    input = input.replace(input.slice(num - 1, num), "");
+    input = input.replace(input.slice(num - 1, num), '');
   },
-  "x": () => {
+  x: () => {
     if (num > 3) {
-      throw new Error("invalid opcode");
+      throw new Error('invalid opcode');
     }
 
     opcode = num;
   }
 };
 
-function chkRegister() {
+function chkRegister () {
   if (!u && (register < -127 || register > 127)) {
-    throw new Error("register value out of bounds");
+    throw new Error('register value out of bounds');
   }
 }
 
-function preConditional() {
-  if (opcode != 3) {
-    throw new Error("conditionals must run in opcode 3");
+function preConditional () {
+  if (opcode !== 3) {
+    throw new Error('conditionals must run in opcode 3');
   }
   if (cnum === undefined) {
-    throw new Error("number to check against must be defined");
+    throw new Error('number to check against must be defined');
   }
-  jnum = num;
   opcode = 0;
 }
 
 // execute a correctly formatted conditional instruction
-function conditional() {
-  instructions["f"]();
+function conditional () {
+  instructions.f();
   cnum = undefined; // reset cnum
   return true; // abort current function
 }
 
-function step() {
+function step () {
   // line that is only a comment
   if (contents[line - 1].match(/^ *#.*$/)) {
     line++;
     return;
   }
 
-  let instruction = contents[line - 1].slice(col - 1, col + 1);
+  const instruction = contents[line - 1].slice(col - 1, col + 1);
 
-  if (instruction == "" || col > contents[line - 1].length) {
+  if (instruction === '' || col > contents[line - 1].length) {
     func = false;
-
     line++;
     col = 1;
-
-    if (opcode == 1) { opcode = 0; }
-
+    if (opcode === 1) {
+      opcode = 0;
+    }
     return;
   }
 
-  let number = instruction.slice(0, 1);
-  let letter = instruction.slice(1, 2);
+  const number = instruction.slice(0, 1);
+  const letter = instruction.slice(1, 2);
 
   // special case first
-  if (number == "#") {
-    throw new Error("a space is required before comments at the end of a line");
+  if (number === '#') {
+    throw new Error('a space is required before comments at the end of a line');
   }
 
   if (isNaN(number)) {
     if (!(number in instructions)) {
-      throw new Error("invalid instruction");
+      throw new Error('invalid instruction');
     }
-    throw new Error("missing number literal");
+    throw new Error('missing number literal');
   } else {
-    if (letter == "\r") {
-      throw new Error("number literal missing an instruction");
+    if (letter === '\r') {
+      throw new Error('number literal missing an instruction');
     }
   }
 
   if (!isNaN(letter)) {
-    throw new Error("attempt to chain number literals");
+    throw new Error('attempt to chain number literals');
   }
 
   // the instruction is formatted correctly, so we continue
@@ -279,33 +276,33 @@ function step() {
   col++;
 
   if (!(letter in instructions)) {
-    throw new Error("invalid instruction");
+    throw new Error('invalid instruction');
   }
 
   // we handle this as soon as possible to avoid issues
-  if (instruction == "0x") {
+  if (instruction === '0x') {
     func = false;
     opcode = 0;
     col++;
     return;
   }
 
-  if (opcode == 1 && func == false && letter != "f") {
-    throw new Error("improper use of opcode 1");
+  if (opcode === 1 && func === false && letter !== 'f') {
+    throw new Error('improper use of opcode 1');
   }
 
-  if (opcode == 2 && letter != "v") {
-    throw new Error("improper use of opcode 2");
+  if (opcode === 2 && letter !== 'v') {
+    throw new Error('improper use of opcode 2');
   }
 
-  if (opcode == 3) {
+  if (opcode === 3) {
     // last instruction was 3x
-    if (cnum === undefined && letter != "v") {
-      throw new Error("improper use of opcode 3");
+    if (cnum === undefined && letter !== 'v') {
+      throw new Error('improper use of opcode 3');
     }
     // last two instructions were 3x and [0-9]v
-    if (cnum !== undefined && !(letter == "e" || letter == "g" || letter == "l")) {
-      throw new Error("improper use of opcode 3");
+    if (cnum !== undefined && !(letter === 'e' || letter === 'g' || letter === 'l')) {
+      throw new Error('improper use of opcode 3');
     }
   }
 
@@ -322,7 +319,7 @@ function step() {
   col++;
 }
 
-async function parse(c, file, inp, unlimited, t) {
+async function parse (c, file, inp, unlimited, t) {
   contents = c;
   filename = file;
   input = inp;
@@ -337,12 +334,12 @@ async function parse(c, file, inp, unlimited, t) {
       step();
     } catch (err) {
       if (err instanceof RangeError) {
-        err = new Error("too much recursion");
+        err.message = 'too much recursion';
       }
       spinner.stop();
       perf.stop();
       err.message += `\n${trace()}`;
-      return `${chalk.red("error:")} ${err.message}`;
+      return `${chalk.red('error:')} ${err.message}`;
     }
   }
 
@@ -353,7 +350,7 @@ async function parse(c, file, inp, unlimited, t) {
   spinner.stop();
 
   if (!test) {
-    log(chalk.green("finished") + chalk.cyan(` in ${time}`));
+    console.log(chalk.green('finished') + chalk.cyan(` in ${time}`));
   }
 
   return `output: ${output}`;
@@ -362,22 +359,19 @@ async function parse(c, file, inp, unlimited, t) {
 // utils
 const reset = () => {
   filename = cnum = input = u = undefined;
-  opcode = register = num = fnum = jnum = 0;
+  opcode = register = num = fnum = 0;
   line = col = 1;
-  output = "";
+  output = '';
   func = false;
-  functions = Array(10).fill("");
+  functions = Array(10).fill('');
   variables = [];
-}
+};
 
-const log = str => { console.log(chalk.white(str)) };
-const info = str => { log(chalk.cyan(str)) };
-const success = str => { log(chalk.green(str)) };
-const warn = str => { log(chalk.yellow(str)) };
+const warn = str => console.log(chalk.yellow(str));
 
 // produce stack trace
 const trace = () => {
-  let f = test ? "" : `${filename}:`;
+  const f = test ? '' : `${filename}:`;
   let l, c; // line and column where the function last read from the stack trace caused a problem
   let arr = []; // array of lines to keep
 
@@ -405,11 +399,11 @@ const trace = () => {
   // we use fs to map its lines to their functions, find the first element which occurs twice, then drop all elements after its first occurrence
   let fs = arr.map((x, i) => Number(x[10]));
   for (let i = 0; i < fs.length; i++) {
-    if (fs.findIndex(x => x == fs[i]) != i) {
-      fs = fs.slice(0, fs.findIndex(x => x == fs[i]) + 1);
+    if (fs.findIndex(x => x === fs[i]) !== i) {
+      fs = fs.slice(0, fs.findIndex(x => x === fs[i]) + 1);
       break;
     }
-  };
+  }
 
   arr = arr.slice(0, fs.length);
 
@@ -421,7 +415,7 @@ const trace = () => {
     arr.push(chalk.cyan(`  at ${f}${line}:${col}`));
   }
 
-  return arr.join("");
-}
+  return arr.join('');
+};
 
-module.exports = { parse, reset, log, warn };
+module.exports = { parse, reset, warn };
