@@ -7,18 +7,11 @@
 */
 
 // dependencies
-const chalk = require('chalk');
-const perf = require('execution-time')();
-const ms = require('pretty-ms');
+import chalk from 'chalk';
+import ms from 'pretty-ms';
+import performance from 'execution-time';
 
-// spinner code
-const ora = require('ora');
-const spinner = ora('running...');
-spinner.color = 'yellow';
-spinner.spinner = {
-  interval: 80,
-  frames: ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏']
-};
+const perf = performance();
 
 let contents;
 let filename;
@@ -319,14 +312,13 @@ function step () {
   col++;
 }
 
-async function parse (c, file, inp, unlimited, t) {
+export default async function parse (c, file, inp, unlimited, t) {
   contents = c;
   filename = file;
   input = inp;
   u = unlimited;
   test = t;
 
-  spinner.start();
   perf.start();
 
   while (line <= contents.length) {
@@ -336,7 +328,6 @@ async function parse (c, file, inp, unlimited, t) {
       if (err instanceof RangeError) {
         err.message = 'too much recursion';
       }
-      spinner.stop();
       perf.stop();
       err.message += `\n${trace()}`;
       return `${chalk.red('error:')} ${err.message}`;
@@ -347,8 +338,6 @@ async function parse (c, file, inp, unlimited, t) {
   const results = perf.stop();
   const time = ms(Number(results.time.toFixed(0)));
 
-  spinner.stop();
-
   if (!test) {
     console.log(chalk.green('finished') + chalk.cyan(` in ${time}`));
   }
@@ -357,7 +346,7 @@ async function parse (c, file, inp, unlimited, t) {
 }
 
 // utils
-const reset = () => {
+export const reset = () => {
   filename = cnum = input = u = undefined;
   opcode = register = num = fnum = 0;
   line = col = 1;
@@ -367,7 +356,7 @@ const reset = () => {
   variables = [];
 };
 
-const warn = str => console.log(chalk.yellow(str));
+export const warn = str => console.log(chalk.yellow(str));
 
 // produce stack trace
 const trace = () => {
@@ -417,5 +406,3 @@ const trace = () => {
 
   return arr.join('');
 };
-
-module.exports = { parse, reset, warn };

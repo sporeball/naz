@@ -5,13 +5,14 @@
   MIT license
 */
 
-const Naz = require('./index.js');
+import parse from './index.js';
 
-const chalk = require('chalk');
-const fs = require('fs');
-const eol = require('eol');
+import chalk from 'chalk';
+import eol from 'eol';
+import fs from 'fs';
+import yeow from 'yeow';
 
-const args = require('yeow')({
+const args = yeow({
   program: {
     type: 'file',
     extensions: '.naz',
@@ -57,7 +58,7 @@ function naz () {
   contents = contents.split('\r\n')
     .map(x => x.match(/^\w+ +#.*$/) ? x.slice(0, x.indexOf(' #')).trimEnd() : x);
 
-  Naz.parse(contents, filename, input, unlimited, false)
+  parse(contents, filename, input, unlimited, false)
     .then(result => { console.log(result); });
 }
 

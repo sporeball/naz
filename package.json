@@ -2,7 +2,8 @@
   "name": "naz",
   "version": "1.2.0",
   "description": "an esolang where every instruction is named by a number and a letter",
-  "main": "index.js",
+  "type": "module",
+  "exports": "./index.js",
   "scripts": {
     "test": "mocha test/no_input.js test/input.js --reporter=decaf --timeout 5000"
   },
@@ -23,7 +24,6 @@
     "chalk": "^4.1.0",
     "eol": "^0.9.1",
     "execution-time": "^1.4.1",
-    "ora": "^5.4.0",
     "pretty-ms": "^7.0.1",
     "yeow": "^0.2.0"
   },
