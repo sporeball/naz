@@ -58,8 +58,16 @@ function naz () {
   contents = contents.split('\r\n')
     .map(x => x.match(/^\w+ +#.*$/) ? x.slice(0, x.indexOf(' #')).trimEnd() : x);
 
+  const tStart = performance.now();
+
   parse(contents, filename, input, unlimited, false)
-    .then(result => { console.log(result); });
+    .then(result => {
+      const tEnd = performance.now();
+      const time = (tEnd - tStart).toFixed(0);
+
+      console.log(chalk`{green finished} {cyan in ${time}ms}`);
+      console.log(result);
+    });
 }
 
 const runnerErr = str => {

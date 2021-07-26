@@ -8,10 +8,6 @@
 
 // dependencies
 import chalk from 'chalk';
-import ms from 'pretty-ms';
-import performance from 'execution-time';
-
-const perf = performance();
 
 let contents;
 let filename;
@@ -315,8 +311,6 @@ export default async function parse (c, file, inp, unlimited) {
   input = inp;
   u = unlimited;
 
-  perf.start();
-
   while (line <= contents.length) {
     try {
       step();
@@ -324,17 +318,10 @@ export default async function parse (c, file, inp, unlimited) {
       if (err instanceof RangeError) {
         err.message = 'too much recursion';
       }
-      perf.stop();
       err.message += `\n${trace()}`;
       return `${chalk.red('error:')} ${err.message}`;
     }
   }
-
-  // stop
-  const results = perf.stop();
-  const time = ms(Number(results.time.toFixed(0)));
-
-  console.log(chalk.green('finished') + chalk.cyan(` in ${time}`));
 
   return `output: ${output}`;
 }

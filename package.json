@@ -23,8 +23,6 @@
   "dependencies": {
     "chalk": "^4.1.0",
     "eol": "^0.9.1",
-    "execution-time": "^1.4.1",
-    "pretty-ms": "^7.0.1",
     "yeow": "^0.2.0"
   },
   "devDependencies": {
