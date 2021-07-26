@@ -27,9 +27,3 @@ export function test (file, input, expected) {
     });
   }).catch();
 }
-
-export function sleep (ms) {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms);
-  });
-}

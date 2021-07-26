@@ -15,6 +15,5 @@ describe("no_input", function() {
 
   afterEach(async function() {
     reset();
-    await Common.sleep(100);
   });
 });
