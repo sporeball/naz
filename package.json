@@ -5,7 +5,7 @@
   "type": "module",
   "exports": "./index.js",
   "scripts": {
-    "test": "mocha test/no_input.js test/input.js --reporter=decaf --timeout 5000"
+    "test": "mocha test/no_input.js test/input.js --timeout 5000"
   },
   "repository": {
     "type": "git",
@@ -28,8 +28,6 @@
     "yeow": "^0.2.0"
   },
   "devDependencies": {
-    "draftlog": "^1.0.12",
-    "log-symbols": "^4.1.0",
     "mocha": "^8.3.2"
   }
 }

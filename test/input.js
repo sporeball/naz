@@ -1,8 +1,9 @@
-const Naz = require("../index.js");
-const Common = require("./common.js");
-const chalk = require("chalk");
+import * as Common from './common.js';
+import { reset } from '../index.js';
 
-var tests;
+import chalk from 'chalk';
+
+let tests;
 
 describe("input", function() {
   describe("rot13", function() {
@@ -13,7 +14,7 @@ describe("input", function() {
     ];
     tests.forEach(function(test) {
       it(`${test.input} ${chalk.gray("->")} ${test.expected}`, async function() {
-        await Common.parse("rot13", test.input, test.expected);
+        await Common.test("rot13", test.input, test.expected);
       });
     });
   });
@@ -27,7 +28,7 @@ describe("input", function() {
     ];
     tests.forEach(function(test) {
       it(`${test.input} ${chalk.gray("->")} ${test.expected}`, async function() {
-        await Common.parse("prime", test.input, test.expected);
+        await Common.test("prime", test.input, test.expected);
       });
     });
   });
@@ -40,7 +41,7 @@ describe("input", function() {
     ];
     tests.forEach(function(test) {
       it(`${test.input} ${chalk.gray("->")} ${test.expected}`, async function() {
-        await Common.parse("cg/compactify", test.input, test.expected);
+        await Common.test("cg/compactify", test.input, test.expected);
       });
     });
   });
@@ -51,7 +52,7 @@ describe("input", function() {
     ];
     tests.forEach(function(test) {
       it(`${test.input} ${chalk.gray("->")} ${test.expected}`, async function() {
-        await Common.parse("cg/doublespeak", test.input, test.expected);
+        await Common.test("cg/doublespeak", test.input, test.expected);
       });
     });
   });
@@ -62,7 +63,7 @@ describe("input", function() {
     ];
     tests.forEach(function(test) {
       it(`${test.input} ${chalk.gray("->")} ${test.expected}`, async function() {
-        await Common.parse("cg/fullwidth", test.input, test.expected);
+        await Common.test("cg/fullwidth", test.input, test.expected);
       });
     });
   });
@@ -76,7 +77,7 @@ describe("input", function() {
     ];
     tests.forEach(function(test) {
       it(`${test.input} ${chalk.gray("->")} ${test.expected}`, async function() {
-        await Common.parse("cg/howhappy", test.input, test.expected);
+        await Common.test("cg/howhappy", test.input, test.expected);
       });
     });
   });
@@ -88,13 +89,13 @@ describe("input", function() {
     ];
     tests.forEach(function(test) {
       it(`${test.input} ${chalk.gray("->")} ${test.expected}`, async function() {
-        await Common.parse("cg/lowercase", test.input, test.expected);
+        await Common.test("cg/lowercase", test.input, test.expected);
       });
     });
   });
 
   afterEach(async function() {
-    Naz.reset();
+    reset();
     await Common.sleep(100);
   });
 });

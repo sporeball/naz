@@ -39,7 +39,6 @@ const cols = Array(10).fill(0); // column numbers where functions are declared
 const callStack = [];
 
 let func = false; // are we in the middle of declaring a function?
-let test = false; // are we running a test right now?
 
 const instructions = {
   // arithmetic instructions
@@ -106,9 +105,7 @@ const instructions = {
     spinner.stop();
     warn('program halted');
     console.log(trace());
-    if (!test) {
-      console.log(`output: ${output}`);
-    }
+    console.log(`output: ${output}`);
     process.exit(0);
   },
   o: () => {
@@ -312,12 +309,11 @@ function step () {
   col++;
 }
 
-export default async function parse (c, file, inp, unlimited, t) {
+export default async function parse (c, file, inp, unlimited) {
   contents = c;
   filename = file;
   input = inp;
   u = unlimited;
-  test = t;
 
   perf.start();
 
@@ -338,9 +334,7 @@ export default async function parse (c, file, inp, unlimited, t) {
   const results = perf.stop();
   const time = ms(Number(results.time.toFixed(0)));
 
-  if (!test) {
-    console.log(chalk.green('finished') + chalk.cyan(` in ${time}`));
-  }
+  console.log(chalk.green('finished') + chalk.cyan(` in ${time}`));
 
   return `output: ${output}`;
 }
@@ -360,7 +354,7 @@ export const warn = str => console.log(chalk.yellow(str));
 
 // produce stack trace
 const trace = () => {
-  const f = test ? '' : `${filename}:`;
+  const f = `${filename}:`;
   let l, c; // line and column where the function last read from the stack trace caused a problem
   let arr = []; // array of lines to keep
 
