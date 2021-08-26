@@ -100,7 +100,11 @@ const instructions = {
   h: () => {
     warn('program halted');
     console.log(trace());
-    console.log(`output: ${output}`);
+    if (output === '') {
+      console.log(chalk`{gray (no output)}`);
+    } else {
+      console.log(`output: ${output}`);
+    }
     process.exit(0);
   },
   o: () => {
@@ -321,7 +325,11 @@ export default async function parse (c, file, inp, unlimited) {
     }
   }
 
-  return `output: ${output}`;
+  if (output === '') {
+    return chalk`{gray (no output)}`;
+  } else {
+    return `output: ${output}`;
+  }
 }
 
 // utils
