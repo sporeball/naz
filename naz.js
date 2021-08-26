@@ -71,7 +71,7 @@ function naz () {
 }
 
 const runnerErr = str => {
-  Naz.log(chalk.red('error: ') + str);
+  console.log(chalk`{red error:} ${str}`);
   process.exit(1);
 };
 

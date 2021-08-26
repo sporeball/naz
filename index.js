@@ -98,7 +98,6 @@ const instructions = {
     }
   },
   h: () => {
-    spinner.stop();
     warn('program halted');
     console.log(trace());
     console.log(`output: ${output}`);
@@ -178,7 +177,6 @@ const instructions = {
       }
       throw new Error('input string not long enough');
     }
-
     register = val;
     input = input.replace(input.slice(num - 1, num), '');
   },
