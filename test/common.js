@@ -12,7 +12,7 @@ export function test (file, input, expected) {
     contents = eol.crlf(fs.readFileSync(path.join(path.resolve(), `examples/${file}.naz`), {encoding: "utf-8"}, function(){}));
 
     contents = contents.split("\r\n")
-      .map(x => x.match(/^\w+ +#.*$/) ? x.slice(0, x.indexOf(" #")).trimEnd() : x);
+      .map(line => line.replace(/^#.*$| +#.*$/gm, ''));
 
     parse(contents, "", input, false, true).then(function(output) {
       if (output.indexOf(`${chalk.red("error:")}`) == 0) {

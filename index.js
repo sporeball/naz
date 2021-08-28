@@ -217,8 +217,7 @@ function conditional () {
 }
 
 function step () {
-  // line that is only a comment
-  if (contents[line - 1].match(/^ *#.*$/)) {
+  if (line === '') {
     line++;
     return;
   }
@@ -235,8 +234,7 @@ function step () {
     return;
   }
 
-  const number = instruction.slice(0, 1);
-  const letter = instruction.slice(1, 2);
+  const [number, letter] = instruction;
 
   // special case first
   if (number === '#') {
