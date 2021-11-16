@@ -217,14 +217,9 @@ function conditional () {
 }
 
 function step () {
-  if (line === '') {
-    line++;
-    return;
-  }
-
   const instruction = contents[line - 1].slice(col - 1, col + 1);
 
-  if (instruction === '' || col > contents[line - 1].length) {
+  if (instruction === '') {
     func = false;
     line++;
     col = 1;
