@@ -32,7 +32,7 @@ let variables = [];
 const lines = Array(10).fill(0); // line numbers where functions are declared
 const cols = Array(10).fill(0); // column numbers where functions are declared
 
-const callStack = [];
+let callStack = [];
 
 let func = false; // are we in the middle of declaring a function?
 
@@ -72,7 +72,13 @@ const instructions = {
         throw new Error('use of undeclared function');
       }
 
-      callStack.push([fnum, line, col]);
+      // set the top frame's position to where we are
+      callStack[0].splice(1, 2, line, col);
+      // push a new frame with undefined position
+      // if something goes wrong, it will be updated
+      callStack.unshift([`${fnum}f`, undefined, undefined]);
+
+      // move to the start of the called function
       line = lines[fnum];
       col = cols[fnum] + 2;
 
@@ -85,9 +91,10 @@ const instructions = {
         col += 2;
       }
 
-      const popped = callStack.pop();
-      line = popped[1];
-      col = popped[2];
+      // discard the top frame
+      callStack.shift();
+      // restore position
+      [, line, col] = callStack[0];
     } else if (opcode === 1) {
       if (functions[num] !== '') {
         throw new Error('attempt to redeclare function');
@@ -306,6 +313,10 @@ export default async function parse (c, file, inp, unlimited) {
   input = inp;
   u = unlimited;
 
+  // create bottom frame with undefined position
+  // if something goes wrong, it will be updated
+  callStack.unshift([filename, undefined, undefined]);
+
   while (line <= contents.length) {
     try {
       step();
@@ -338,51 +349,27 @@ export const reset = () => {
 
 export const warn = str => console.log(chalk.yellow(str));
 
-// produce stack trace
 const trace = () => {
-  const f = `${filename}:`;
-  let l, c; // line and column where the function last read from the stack trace caused a problem
-  let arr = []; // array of lines to keep
+  // update the position stored in the top frame
+  callStack[0][1] = line;
+  callStack[0][2] = col;
 
-  callStack.reverse();
-  // if something's on the stack, the interpreter halted within a function
-  // push where we are
-  if (callStack.length > 0) {
-    arr.push(chalk.cyan(`  at ${callStack[0][0]}f (${f}${line}:${col})\n`));
-  }
-
-  // every item on the stack is an array with
-  // - function which caused a problem;
-  // - line where it was called;
-  // - col where it was called.
-  // l and c are updated with these values every time, but we only output a line with them if they don't come from the last item on the stack
-  for (let call = 0; call < callStack.length; call++) {
-    l = callStack[call][1];
-    c = callStack[call][2];
-    if (call + 1 < callStack.length) {
-      arr.push(chalk.cyan(`  at ${callStack[call + 1][0]}f (${f}${l}:${c})\n`));
+  // prettify
+  callStack = callStack.map((frame, index) => {
+    if (index === callStack.length - 1) {
+      return `  at ${frame.join(':')}`;
+    } else {
+      let [namespace, line, col] = frame;
+      return `  at ${namespace} (${filename}:${line}:${col})`;
     }
+  });
+
+  // truncate if needed
+  if (callStack.length > 6) {
+    callStack.splice(5, callStack.length - 6, '  ...');
   }
 
-  // the array will become extremely large under certain conditions
-  // we use fs to map its lines to their functions, find the first element which occurs twice, then drop all elements after its first occurrence
-  let fs = arr.map((x, i) => Number(x[10]));
-  for (let i = 0; i < fs.length; i++) {
-    if (fs.findIndex(x => x === fs[i]) !== i) {
-      fs = fs.slice(0, fs.findIndex(x => x === fs[i]) + 1);
-      break;
-    }
-  }
+  callStack = callStack.map(line => chalk.cyan(line));
 
-  arr = arr.slice(0, fs.length);
-
-  // if something's on the stack, the line and column of the top-level call are stored in l and c
-  // otherwise we're just at the top level
-  if (callStack.length > 0) {
-    arr.push(chalk.cyan(`  at ${f}${l}:${c}`));
-  } else {
-    arr.push(chalk.cyan(`  at ${f}${line}:${col}`));
-  }
-
-  return arr.join('');
-};
+  return callStack.join('\n');
+}
