@@ -56,7 +56,7 @@ function naz () {
   }
 
   contents = contents.split('\r\n')
-    .map(line => line.replace(/^#.*$| +#.*$/gm, ''));
+    .map(line => line.replace(/#.*/gm, '').trim());
 
   const tStart = performance.now();
 

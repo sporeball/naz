@@ -238,11 +238,6 @@ function step () {
 
   const [number, letter] = instruction;
 
-  // special case first
-  if (number === '#') {
-    throw new Error('a space is required before comments at the end of a line');
-  }
-
   if (isNaN(number)) {
     if (!(number in instructions)) {
       throw new Error('invalid instruction');
