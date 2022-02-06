@@ -238,29 +238,29 @@ function step () {
 
   const [number, letter] = instruction;
 
+  if (letter === undefined) {
+    throw new Error('number literal missing an instruction');
+  }
+
   if (isNaN(number)) {
     if (!(number in instructions)) {
       throw new Error('invalid instruction');
     }
     throw new Error('missing number literal');
-  } else {
-    if (letter === undefined) {
-      throw new Error('number literal missing an instruction');
-    }
   }
 
-  if (!isNaN(letter)) {
+  if (isFinite(letter)) {
     throw new Error('attempt to chain number literals');
   }
-
-  // the instruction is formatted correctly, so we continue
-
-  num = Number(number);
-  col++;
 
   if (!(letter in instructions)) {
     throw new Error('invalid instruction');
   }
+
+  // both characters of the instruction are permissible, so we can continue
+
+  num = Number(number);
+  col++;
 
   // we handle this as soon as possible to avoid issues
   if (instruction === '0x') {
