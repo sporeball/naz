@@ -244,7 +244,7 @@ function step () {
     }
     throw new Error('missing number literal');
   } else {
-    if (letter === '\r') {
+    if (letter === undefined) {
       throw new Error('number literal missing an instruction');
     }
   }
