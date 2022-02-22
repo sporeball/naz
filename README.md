@@ -84,6 +84,11 @@ naz is provably as powerful as a finite state automaton, because it can implemen
 
 as posited by quintopia [here](https://esolangs.org/wiki/Naz#Computational_class), naz `-u` is capable of implementing a universal Turing machine with 5 states and 7 symbols, making it Turing-complete; this means the original language is equivalent to a [bounded-storage machine](https://esolangs.org/wiki/Bounded-storage_machine).
 
+### other implementations
+a few people have created naz interpreters in languages other than JavaScript! these are:
+- [nazly](https://github.com/Lyxal/nazly), written in Python (by [Lyxal](https://github.com/Lyxal))
+- [cnaz](https://github.com/tobiasheineken/cnaz), written in C, using an unbounded integer type for naz `-u` (by [tobiasheineken](https://github.com/tobiasheineken))
+
 ### thanks
 the naz interpreter and runner are heavily based on those of the fantastic [\\/\\/>](https://github.com/torcado194/worm), by [torcado](https://github.com/torcado194). <3
 
