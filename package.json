@@ -22,6 +22,7 @@
   "homepage": "https://github.com/sporeball/naz#readme",
   "dependencies": {
     "chalk": "^5.0.0",
+    "chalk-template": "^0.4.0",
     "eol": "^0.9.1",
     "yeow": "^0.2.0"
   },

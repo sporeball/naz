@@ -7,6 +7,7 @@
 */
 
 // dependencies
+import chalkTemplate from 'chalk-template';
 import chalk from 'chalk';
 
 let contents;
@@ -108,7 +109,7 @@ const instructions = {
     warn('program halted');
     console.log(trace());
     if (output === '') {
-      console.log(chalk`{gray (no output)}`);
+      console.log(chalkTemplate`{gray (no output)}`);
     } else {
       console.log(`output: ${output}`);
     }
@@ -325,7 +326,7 @@ export default async function parse (c, file, inp, unlimited) {
   }
 
   if (output === '') {
-    return chalk`{gray (no output)}`;
+    return chalkTemplate`{gray (no output)}`;
   } else {
     return `output: ${output}`;
   }

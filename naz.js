@@ -7,6 +7,7 @@
 
 import parse from './index.js';
 
+import chalkTemplate from 'chalk-template';
 import chalk from 'chalk';
 import eol from 'eol';
 import fs from 'fs';
@@ -65,13 +66,13 @@ function naz () {
       const tEnd = performance.now();
       const time = (tEnd - tStart).toFixed(0);
 
-      console.log(chalk`{green finished} {cyan in ${time}ms}`);
+      console.log(chalkTemplate`{green finished} {cyan in ${time}ms}`);
       console.log(result);
     });
 }
 
 const runnerErr = str => {
-  console.log(chalk`{red error:} ${str}`);
+  console.log(chalkTemplate`{red error:} ${str}`);
   process.exit(1);
 };
 
