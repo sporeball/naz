@@ -5,16 +5,7 @@
   MIT license
 */
 
-var editor = ace.edit("editor");
-var session = editor.getSession();
-
-editor.setTheme("ace/theme/monokai");
-editor.setOptions({
-  fontSize: 14
-});
-
-session.setOption("indentedSoftWrap", false);
-session.setUseWrapMode(true);
+const editor = kell('editor', document.getElementById('editor_container'));
 
 var contents;
 
@@ -27,7 +18,8 @@ var fnum = 0; // number to be used when executing the f instruction
 var jnum = 0; // number of the function to execute conditionally
 var cnum = undefined; // number to check against
 
-var line = col = 1;
+var line = 1;
+var col = 1;
 
 var input;
 var output = "";
@@ -36,8 +28,6 @@ var callStack = [];
 
 var halt = false; // whether to halt the interpreter
 var func = false; // are we in the middle of declaring a function?
-
-var aceCode; // the code inside the ace editor
 
 var elRun = document.getElementById("run");
 var elPermalink = document.getElementById("permalink");
@@ -410,14 +400,16 @@ trace = () => {
 sleep = ms => new Promise(resolve => { setTimeout(resolve, ms); });
 
 function updateBytes() {
-  let data = eol.crlf(session.getValue());
+  let data = eol.crlf(editor.content);
   elBytes.innerHTML = `(${data.length} bytes)`;
 }
+
+editor.addEventListener('input', () => updateBytes());
 
 function exec() {
   reset();
 
-  let data = eol.crlf(session.getValue());
+  let data = eol.crlf(editor.content);
 
   contents = data.split("\r\n")
     .map(x => x.match(/^\w+ +#.*$/) ? x.slice(0, x.indexOf(" #")).trimEnd() : x);
@@ -441,20 +433,16 @@ elRun.onclick = function() {
 }
 
 elPermalink.onclick = function() {
-  let data = eol.crlf(session.getValue());
+  let data = eol.crlf(editor.content);
   let inp = elInput.value;
   let n = elNullByte.checked;
   window.location.href = encodeURI(`${window.location.href.split('?')[0]}?code=${encodeURIComponent(data)}&input=${encodeURIComponent(inp)}&n=${n}`);
 }
 
-session.on("change", () => {
-  updateBytes();
-});
-
 window.addEventListener("DOMContentLoaded", e => {
   let params = new URLSearchParams(window.location.search);
-  session.setValue(params.get("code") || "9a7m2a1o");
-  session.setValue(unescape(session.getValue()));
+  editor.content = params.get("code") || "9a7m2a1o";
+  editor.content = unescape(editor.content);
   updateBytes();
 
   elInput.value = params.get("input") || "";

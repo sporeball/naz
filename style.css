@@ -1,3 +1,11 @@
+:root {
+  --kell-gutter-bg:#333;
+  --kell-gutter-fg:#aaa;
+  --kell-content-bg:#272822;
+  --kell-content-fg:#F8F8F2;
+  --kell-border:#555
+}
+
 * {
   margin:0;
   border:0;
@@ -89,7 +97,7 @@ div label, [type="checkbox"] {
 }
 
 #editor, #result {
-  width:305px;
+  width:310px;
   height:200px;
   flex:1
 }
@@ -99,9 +107,11 @@ div label, [type="checkbox"] {
 }
 
 #input, #result {
+  font-size:14px;
+  line-height:18px;
   background-color:#272822;
   color: #F8F8F2;
-  font:16px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace
+  font-family:monospace
 }
 
 #input {
@@ -111,8 +121,8 @@ div label, [type="checkbox"] {
 
 #result {
   margin-left:0.5em;
-  padding-left:5px;
   text-align:left;
+  padding:8px;
   overflow-y:auto;
   word-break:break-word
 }
