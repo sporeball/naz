@@ -9,34 +9,99 @@
 * {
   margin:0;
   border:0;
-  padding:0;
-  box-sizing:border-box
+  box-sizing:border-box;
+  padding:0
 }
 
-html {
-  position:relative;
-  min-height:100%
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+  line-height:1.4;
+  color:#222
 }
 
-h1, h2, h3, h4 {
+header {
+  padding:3rem;
+  background:#eee
+}
+
+main {
+  margin:auto;
+  max-width:1000px;
+  padding:2ch
+}
+
+h1, h3 {
+  font-weight:400;
   font-family:"Abel"
 }
 
-ul {
-  padding-left:3em;
+h1 {
+  font-size:2.25rem
 }
 
-ul, .container p {
+h3 {
+  margin:1rem 0 0.5rem;
+  font-size:1.5rem
+}
+
+p, li, label {
   margin-bottom:0.25rem;
-  font-size:0.875em
+  font-size:14px
+}
+
+a {
+  text-decoration:none;
+  color:#0076d1
+}
+
+a:hover {
+  text-decoration:underline
+}
+
+ul {
+  padding-left:3em
 }
 
 kbd {
-  font-size:1em
+  border-radius:4px;
+  padding:1px 4px;
+  background-color:#272822;
+  font-size:14px;
+  color:#fff
+}
+
+button {
+  border:none;
+  border-radius:6px;
+  padding:10px 20px;
+  background:#dedede;
+  cursor:pointer;
+  font-size:inherit;
+  font-family:inherit;
+  color:#222;
+  outline:none
+}
+
+button:focus {
+  box-shadow:0 0 0 2px #0098dcab
+}
+
+button:active {
+  transform:translateY(2px)
+}
+
+.btn-dark {
+  background:#222;
+  color:#fff
 }
 
 footer {
-  background-color:#e9ecef
+  overflow:auto;
+  margin-bottom:0;
+  padding:1.25rem;
+  background:#eee;
+  text-align:center;
+  color:#666
 }
 
 div label, [type="checkbox"] {
@@ -44,22 +109,11 @@ div label, [type="checkbox"] {
 }
 
 .small {
-  margin-top:0.5rem;
-  margin-bottom:0.5rem
+  font-size:13px
 }
 
 .form-check {
   padding-left:0
-}
-
-/* last (of section) */
-.l {
-  margin-bottom:1em !important
-}
-
-/* very last */
-.vl {
-  margin-bottom: calc(1em + 2rem) !important
 }
 
 .red {
@@ -78,52 +132,43 @@ div label, [type="checkbox"] {
   color:#9aedfe
 }
 
-.footer {
-  margin-bottom:0;
-  padding:1.25rem;
-  text-align:center;
-  overflow:auto
-}
-
 #tryit {
+  flex-wrap:wrap;
   display:flex;
-  width:625px;
-  flex-wrap:wrap
+  margin:1rem 0;
+  width:625px
 }
 
 #bytes {
-  text-align:left;
-  flex:0 0 100%
+  flex:0 0 100%;
+  text-align:left
 }
 
 #editor, #result {
+  flex:1;
   width:310px;
-  height:200px;
-  flex:1
-}
-
-#editor {
-  margin-right:0.5em
+  height:200px
 }
 
 #input, #result {
-  font-size:14px;
-  line-height:18px;
   background-color:#272822;
-  color: #F8F8F2;
-  font-family:monospace
+  font-size:14px;
+  font-family:monospace;
+  line-height:18px;
+  color: #F8F8F2
 }
 
 #input {
+  margin-bottom:0.5rem;
   padding:2px;
   outline:none
 }
 
 #result {
-  margin-left:0.5em;
-  text-align:left;
-  padding:8px;
   overflow-y:auto;
+  margin-left:1em;
+  padding:8px;
+  text-align:left;
   word-break:break-word
 }
 
@@ -140,13 +185,13 @@ div label, [type="checkbox"] {
   #tryit, #options {
     display:none
   }
-  .footer {
-    padding:0.75rem
+  footer {
+    padding:1rem
   }
 }
 
 @media screen and (max-width:576px) {
-  .jumbotron {
+  header {
     padding:1rem 2rem
   }
 }
